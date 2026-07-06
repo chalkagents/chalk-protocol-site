@@ -10,7 +10,7 @@
     "status": "active",
     "runner": "",
     "verify": {
-      "test": "node --test",
+      "test": "npm test",
       "typecheck": "",
       "lint": "",
       "build": ""
@@ -58,7 +58,8 @@
       "labelType": {
         "bug": "fix",
         "enhancement": "feat",
-        "documentation": "docs"
+        "documentation": "docs",
+        "ci": "ci"
       },
       "ciPollIntervalMs": 5000,
       "ciPollAttempts": 24
@@ -66,7 +67,7 @@
     "worktree": {
       "enabled": true,
       "dir": "..",
-      "setup": ""
+      "setup": "npm install --no-audit --no-fund"
     },
     "e2e": {
       "command": "",
