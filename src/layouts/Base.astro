@@ -127,10 +127,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     color: var(--amber);
     text-decoration: none;
   }
+  /* Safe default hover — the amber inversion is opt-in per component, NEVER global:
+     scoped children that set their own color (docs pager titles, meta links) would
+     render amber-on-amber against an inherited inverted background. */
   a:hover {
-    background: var(--amber);
-    color: #0a0700;
-    text-shadow: none;
+    text-decoration: underline;
   }
   h1,
   h2,
@@ -168,6 +169,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   .brand:hover {
     background: transparent;
     color: var(--phosphor);
+    text-decoration: none;
   }
   .brand-mark {
     animation: blink 1.1s step-end infinite;
@@ -196,7 +198,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     color: var(--border);
   }
   .nav-links a:hover {
+    background: var(--amber);
     color: #0a0700;
+    text-decoration: none;
   }
   .nav-links a:hover::before,
   .nav-links a:hover::after {
@@ -206,7 +210,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     color: var(--amber);
   }
   .nav-links a.nav-repo:hover {
+    background: var(--amber);
     color: #0a0700;
+    text-decoration: none;
   }
 
   /* Site footer — a tmux-style status bar. */
@@ -245,10 +251,17 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   .seg-links a::after {
     content: ']';
   }
+  .seg-links a:hover {
+    background: var(--amber);
+    color: #0a0700;
+    text-decoration: none;
+  }
 
+  /* visibility, not opacity — the chrome test asserts opacity:0 never appears outside
+     the reduced-motion guard, so nothing can accidentally hide content. */
   @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
+    0%, 100% { visibility: visible; }
+    50% { visibility: hidden; }
   }
   @media (prefers-reduced-motion: reduce) {
     .brand-mark {

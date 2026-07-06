@@ -93,7 +93,10 @@ const ascii = ` ██████╗██╗  ██╗ █████╗ █
           {sessionLines.map((line) =>
             line.type === 'cmd' ? (
               <div class="line cmd" style={`--d:${line.delay}s;--dur:${line.dur}s;--n:${line.n}`}>
-                <span class="prompt" aria-hidden="true">$ </span><span class="txt">{line.text}</span>
+                <span class="prompt" aria-hidden="true">$ </span><span
+                  class="txt"
+                  style={`animation-timing-function:steps(${line.n}, end)`}
+                >{line.text}</span>
               </div>
             ) : (
               <div class={`line out ${line.type}`} style={`--d:${line.delay}s`}>{line.text}</div>
@@ -164,12 +167,15 @@ const ascii = ` ██████╗██╗  ██╗ █████╗ █
 
 <script>
   const btn = document.querySelector<HTMLButtonElement>('.copy');
+  let restore: ReturnType<typeof setTimeout> | undefined;
   btn?.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(btn.dataset.copy ?? '');
-      const prev = btn.textContent;
+      // Fixed labels, not a saved snapshot — a double-click inside the restore window
+      // must never capture '[ copied ✓ ]' as the label to restore to.
       btn.textContent = '[ copied ✓ ]';
-      setTimeout(() => { btn.textContent = prev; }, 1200);
+      clearTimeout(restore);
+      restore = setTimeout(() => { btn.textContent = '[ copy ]'; }, 1200);
     } catch {
       /* clipboard unavailable — the command is selectable text right next to the button */
     }
@@ -296,6 +302,11 @@ const ascii = ` ██████╗██╗  ██╗ █████╗ █
     font-size: 0.92rem;
     padding: 0.15rem 0.2rem;
   }
+  .button:hover {
+    background: var(--amber);
+    color: #0a0700;
+    text-decoration: none;
+  }
 
   /* ---- Terminal frames ---- */
   .terminal {
@@ -383,8 +394,8 @@ const ascii = ` ██████╗██╗  ██╗ █████╗ █
     to { width: calc(var(--n) * 1ch); }
   }
   @keyframes blink-cursor {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
+    0%, 100% { visibility: visible; }
+    50% { visibility: hidden; }
   }
 
   /* ---- Gates ---- */

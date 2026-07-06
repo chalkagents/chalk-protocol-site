@@ -156,13 +156,58 @@ describe('site chrome — shared layout, docs chrome, social meta', () => {
     );
   });
 
-  test('landing: the session animation is reduced-motion-safe', () => {
+  test('landing: the typed session animation only exists inside the no-preference guard', () => {
     const html = read(pages[0]);
+    // The CSS minifier strips whitespace (`@media(prefers-reduced-motion:no-preference)`).
+    const m = html.match(/@media\s*\(\s*prefers-reduced-motion:\s*no-preference\s*\)/);
+    assert.ok(m, 'expected a prefers-reduced-motion: no-preference media query (styles are inlined)');
+    const guard = m.index;
+    // The typing reveal (width:0 → N ch) must live INSIDE the guard: with reduced
+    // motion the session renders fully, instantly. Before the guard, nothing may
+    // hide a line or start the reveal.
+    const guarded = html.slice(guard, guard + 6000);
+    assert.ok(guarded.includes('width:0'), 'expected the typing reveal inside the no-preference guard');
+    assert.ok(guarded.includes('steps('), 'expected the stepped typing timing inside the no-preference guard');
+    const before = html.slice(0, guard);
     assert.ok(
-      html.includes('prefers-reduced-motion'),
-      'expected animations gated behind a prefers-reduced-motion media query (styles are inlined)',
+      !before.includes('opacity:0'),
+      'expected no unguarded opacity:0 — reduced-motion users must see every session line',
     );
   });
+
+  for (const page of pages) {
+    test(`${page.name}: the footer is the status bar with npm + github links`, () => {
+      const html = read(page);
+      const footer = html.match(/<footer[^>]*>([\s\S]*?)<\/footer>/);
+      assert.ok(footer, `expected a footer on ${page.name}`);
+      assert.ok(footer[1].includes('status-bar'), `expected the tmux-style status bar on ${page.name}`);
+      assert.ok(
+        footer[1].includes('https://www.npmjs.com/package/chalk-protocol'),
+        `expected the npm link in the status bar on ${page.name}`,
+      );
+      assert.ok(
+        footer[1].includes('https://github.com/chalkagents/chalk-protocol'),
+        `expected the github link in the status bar on ${page.name}`,
+      );
+    });
+  }
+
+  test('landing: client JS is the copy interaction only', () => {
+    const html = read(pages[0]);
+    const scripts = html.match(/<script/g) || [];
+    assert.equal(scripts.length, 1, `expected exactly one script tag, found ${scripts.length}`);
+    assert.ok(html.includes('clipboard'), 'expected the single script to be the clipboard copy handler');
+  });
+
+  for (const page of pages.filter((p) => p.isDoc)) {
+    test(`${page.name}: docs chrome follows the brutalist no-radius rule`, () => {
+      const html = read(page);
+      assert.ok(
+        !/border-radius:(?!0[;}])[^;}]*[1-9]/.test(html),
+        `expected no non-zero border-radius on ${page.name} — everything is a readout`,
+      );
+    });
+  }
 
   for (const page of pages.filter((p) => p.isDoc)) {
     test(`${page.name}: h2 headings carry an anchor link`, () => {
