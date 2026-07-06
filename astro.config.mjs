@@ -8,6 +8,11 @@ export default defineConfig({
   // Tests build sandboxed copies of the project with node_modules symlinked in; a
   // project-local cache dir means concurrent builds can never race on a shared store.
   cacheDir: './.astro-cache',
+  build: {
+    // One page, one request: inline all styles. Also lets the test suite assert on
+    // CSS-delivered behavior (reduced-motion guards) straight from the built HTML.
+    inlineStylesheets: 'always',
+  },
   markdown: {
     // Astro's built-in heading-id pass runs AFTER user rehype plugins, so apply it
     // explicitly first — headingAnchors needs the ids to build its `#…` links.

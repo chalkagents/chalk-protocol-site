@@ -135,6 +135,35 @@ describe('site chrome — shared layout, docs chrome, social meta', () => {
     assert.ok(html.includes('class="terminal-bar"'), 'expected the terminal title bar');
   });
 
+  test('landing: the hero plays the gate-refusal session', () => {
+    const html = read(pages[0]);
+    assert.ok(html.includes('hero-session'), 'expected the hero terminal session');
+    assert.ok(
+      html.includes('The gate decides, not you.'),
+      'expected the gate-refusal line in the hero session',
+    );
+    assert.ok(
+      html.includes('the gate decided, not the model.'),
+      'expected the session to end with the gate deciding',
+    );
+  });
+
+  test('landing: the install command has a copy button', () => {
+    const html = read(pages[0]);
+    assert.ok(
+      html.includes('data-copy="npm install -g chalk-protocol"'),
+      'expected a copy button carrying the install command',
+    );
+  });
+
+  test('landing: the session animation is reduced-motion-safe', () => {
+    const html = read(pages[0]);
+    assert.ok(
+      html.includes('prefers-reduced-motion'),
+      'expected animations gated behind a prefers-reduced-motion media query (styles are inlined)',
+    );
+  });
+
   for (const page of pages.filter((p) => p.isDoc)) {
     test(`${page.name}: h2 headings carry an anchor link`, () => {
       const html = read(page);
