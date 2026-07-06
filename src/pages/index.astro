@@ -1,0 +1,215 @@
+---
+const repo = 'https://github.com/chalkagents/chalk-protocol';
+const docs = [
+  { label: 'README', href: `${repo}/blob/main/README.md`, desc: 'What Chalk Protocol is and why it exists.' },
+  { label: 'PROTOCOL.md', href: `${repo}/blob/main/PROTOCOL.md`, desc: 'The full contract — every gate, spelled out.' },
+  { label: 'QUICKSTART.md', href: `${repo}/blob/main/QUICKSTART.md`, desc: 'From zero to a gated loop in minutes.' },
+  { label: 'RESEARCH.md', href: `${repo}/blob/main/RESEARCH.md`, desc: 'The evidence behind the design.' },
+];
+const gates = [
+  { name: 'Locked test', desc: 'A real test is authored for the acceptance criteria, then locked read-only. The agent cannot weaken or delete it to pass.' },
+  { name: 'Verify', desc: 'The real toolchain plus a test-integrity check must print GREEN. The gate decides success — never the agent.' },
+  { name: 'Adversarial review', desc: 'A second agent tries to refute the change. Every blocking finding must be fixed before it passes.' },
+  { name: 'Merge gate', desc: '`chalk done` only succeeds when verify is green, locked tests are untouched, and review passed.' },
+];
+const steps = [
+  { cmd: 'chalk next', desc: 'find the one task to work on' },
+  { cmd: 'chalk context <id>', desc: 'read the acceptance criteria and at-risk tests before coding' },
+  { cmd: 'chalk start <id>', desc: 'begin — it refuses tasks with no acceptance criteria' },
+  { cmd: 'write code', desc: 'satisfy the criteria, keep the diff small' },
+  { cmd: 'chalk verify', desc: 'loop until the gate prints GREEN' },
+  { cmd: 'chalk review <id>', desc: 'survive the adversarial reviewer' },
+  { cmd: 'chalk done <id>', desc: 'the merge gate closes the task' },
+];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chalk Protocol — ship agent-written code through gates, not vibes</title>
+    <meta
+      name="description"
+      content="Chalk Protocol drives coding agents through a gated loop: specced task, locked test, verify, adversarial review, merge gate."
+    />
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <h1>Chalk Protocol</h1>
+        <p class="pitch">
+          Ship agent-written code through gates, not vibes — a locked spec decides success, not the model.
+        </p>
+        <p class="sub">
+          Chalk turns an unattended coding agent into a disciplined contributor: every change lands
+          through a gated loop it cannot talk its way around.
+        </p>
+        <p class="cta">
+          <a class="button" href={`${repo}/blob/main/QUICKSTART.md`}>Get started</a>
+          <a class="button ghost" href={repo}>View the repo</a>
+        </p>
+      </section>
+
+      <section class="loop" id="the-loop">
+        <h2>The loop — four gates every change must clear</h2>
+        <p>A specced task enters the loop; nothing merges until all four gates say so.</p>
+        <ol class="gates">
+          {gates.map((gate) => (
+            <li>
+              <strong>{gate.name}</strong>
+              <span>{gate.desc}</span>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section class="quickstart" id="quickstart">
+        <h2>Quickstart — the per-task loop</h2>
+        <ol class="steps">
+          {steps.map((step) => (
+            <li>
+              <code>{step.cmd}</code>
+              <span>{step.desc}</span>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section class="docs" id="docs">
+        <h2>Docs</h2>
+        <p>Protocol documentation lives in the parent repo — the source of truth this site cannot drift from.</p>
+        <ul class="doc-links">
+          {docs.map((doc) => (
+            <li>
+              <a href={doc.href}>{doc.label}</a>
+              <span>{doc.desc}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        Built through chalk itself — this site's own changes clear the same four gates.
+        <a href={repo}>chalkagents/chalk-protocol</a>
+      </p>
+    </footer>
+  </body>
+</html>
+
+<style>
+  :root {
+    color-scheme: light dark;
+    --accent: #6d5df6;
+    --ink: #1c1b22;
+    --paper: #fdfcff;
+    --muted: #5f5c6b;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  main {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: 4rem 1.5rem 2rem;
+  }
+  section + section {
+    margin-top: 4rem;
+  }
+  .hero h1 {
+    font-size: 3rem;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.02em;
+  }
+  .pitch {
+    font-size: 1.35rem;
+    font-weight: 600;
+    margin: 0 0 0.75rem;
+  }
+  .sub {
+    color: var(--muted);
+    margin: 0 0 1.5rem;
+  }
+  .cta {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .button {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.5rem;
+    background: var(--accent);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .button.ghost {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+  h2 {
+    font-size: 1.6rem;
+    margin: 0 0 0.5rem;
+  }
+  .gates,
+  .steps {
+    padding-left: 1.25rem;
+    display: grid;
+    gap: 0.75rem;
+    margin: 1rem 0 0;
+  }
+  .gates strong {
+    display: block;
+  }
+  .gates span,
+  .steps span,
+  .doc-links span {
+    color: var(--muted);
+  }
+  .steps code {
+    background: rgba(109, 93, 246, 0.12);
+    border-radius: 0.3rem;
+    padding: 0.1rem 0.4rem;
+    font-size: 0.95em;
+  }
+  .steps span {
+    margin-left: 0.5rem;
+  }
+  .doc-links {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .doc-links a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+    margin-right: 0.5rem;
+  }
+  .doc-links a:hover,
+  footer a:hover {
+    text-decoration: underline;
+  }
+  footer {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+    color: var(--muted);
+    border-top: 1px solid rgba(95, 92, 107, 0.25);
+  }
+  footer a {
+    color: var(--accent);
+  }
+</style>
