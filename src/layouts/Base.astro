@@ -103,6 +103,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     content: '';
     position: absolute;
     inset: 0;
+    z-index: 1; /* explicit — session lines animate opacity (own stacking contexts); paint order must not depend on tree order */
     pointer-events: none;
     background: repeating-linear-gradient(
       0deg,

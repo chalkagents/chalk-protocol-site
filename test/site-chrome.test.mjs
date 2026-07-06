@@ -156,6 +156,48 @@ describe('site chrome — shared layout, docs chrome, social meta', () => {
     );
   });
 
+  // --- v2.1 "modern terminal" — the calm-surface contract. Each assertion would fail
+  // if the refinement were reverted (typography re-aliased to mono, scanlines going
+  // page-global again, or the eyebrow+heading hierarchy collapsing back to $-headings).
+  test('v2.1: prose is a real sans stack and the body uses it', () => {
+    const html = read(pages[0]);
+    assert.match(
+      html,
+      /--sans:\s*ui-sans-serif/,
+      'expected --sans to define a real sans stack, not alias the mono stack',
+    );
+    assert.match(
+      html,
+      /body\s*\{[^}]*font-family:\s*var\(--sans\)/,
+      'expected the body to read in sans — mono is reserved for terminal content',
+    );
+  });
+
+  test('v2.1: scanlines are scoped to terminal frames, never page-global', () => {
+    const html = read(pages[0]);
+    assert.match(
+      html,
+      /\.terminal(\[[^\]]*\])?::?after\s*\{[^}]*repeating-linear-gradient/,
+      'expected the CRT scanline texture inside .terminal::after',
+    );
+    assert.ok(
+      !/body(\[[^\]]*\])?::?(before|after)\s*\{[^}]*repeating-linear-gradient/.test(html),
+      'expected NO page-global scanline overlay on body — texture must not sit over reading text',
+    );
+  });
+
+  test('v2.1: sections use the eyebrow + sans-heading pattern', () => {
+    const html = read(pages[0]);
+    assert.ok(html.includes('class="eyebrow"'), 'expected mono eyebrow labels above section headings');
+    for (const eyebrow of ['$ chalk gates', '$ cat quickstart', '$ ls docs/']) {
+      assert.ok(html.includes(eyebrow), `expected the "${eyebrow}" eyebrow`);
+    }
+    assert.ok(
+      html.includes('The loop — four gates every change must clear'),
+      'expected the loop section to carry a readable sans heading, not a command-styled one',
+    );
+  });
+
   test('landing: the typed session animation only exists inside the no-preference guard', () => {
     const html = read(pages[0]);
     // The CSS minifier strips whitespace (`@media(prefers-reduced-motion:no-preference)`).
