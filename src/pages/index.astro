@@ -110,8 +110,9 @@ const ascii = ` ██████╗██╗  ██╗ █████╗ █
     </section>
 
     <section class="loop" id="the-loop">
-      <h2><span class="h-prompt" aria-hidden="true">$ </span>chalk gates</h2>
-      <p class="section-sub"># The loop — four gates every change must clear. Nothing merges until all four say so.</p>
+      <p class="eyebrow" aria-hidden="true">$ chalk gates</p>
+      <h2>The loop — four gates every change must clear</h2>
+      <p class="section-sub">A specced task enters the loop; nothing merges until all four gates say so.</p>
       <div class="terminal">
         <div class="terminal-bar">
           <span class="dot red"></span>
@@ -132,23 +133,25 @@ const ascii = ` ██████╗██╗  ██╗ █████╗ █
     </section>
 
     <section class="quickstart" id="quickstart">
-      <h2><span class="h-prompt" aria-hidden="true">$ </span>cat quickstart</h2>
-      <p class="section-sub"># Quickstart — the per-task loop.</p>
+      <p class="eyebrow" aria-hidden="true">$ cat quickstart</p>
+      <h2>Quickstart</h2>
+      <p class="section-sub">The per-task loop, start to merge.</p>
       <ol class="steps">
         {steps.map((step, i) => (
           <li>
             <span class="step-no">{String(i + 1).padStart(2, '0')}</span>
             <code>{step.cmd}</code>
-            <span class="step-desc"># {step.desc}</span>
+            <span class="step-desc">{step.desc}</span>
           </li>
         ))}
       </ol>
     </section>
 
     <section class="docs" id="docs">
-      <h2><span class="h-prompt" aria-hidden="true">$ </span>ls docs/</h2>
+      <p class="eyebrow" aria-hidden="true">$ ls docs/</p>
+      <h2>Docs</h2>
       <p class="section-sub">
-        # Rendered here at build time from the parent repo — the source of truth this site cannot drift from.
+        Rendered here at build time from the parent repo — the source of truth this site cannot drift from.
       </p>
       <ul class="doc-links">
         {docs.map((doc) => (
@@ -189,22 +192,25 @@ const ascii = ` ██████╗██╗  ██╗ █████╗ █
     padding: 0 1.5rem 4rem;
   }
   section + section {
-    margin-top: 5.5rem;
+    margin-top: 6rem;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin: 0 0 0.35rem;
+    letter-spacing: 0.02em;
   }
   h2 {
-    font-size: 1.25rem;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    font-size: 1.6rem;
     margin: 0 0 0.4rem;
-  }
-  .h-prompt {
-    color: var(--muted);
-    text-shadow: none;
+    max-width: 42rem;
   }
   .section-sub {
     color: var(--muted);
-    margin: 0 0 1.5rem;
-    font-size: 0.92rem;
+    margin: 0 0 1.6rem;
+    font-size: 1rem;
+    max-width: 42rem;
   }
   .prompt {
     color: var(--amber);
@@ -221,40 +227,42 @@ const ascii = ` ██████╗██╗  ██╗ █████╗ █
   }
   @media (min-width: 64rem) {
     .hero {
-      grid-template-columns: minmax(0, 26rem) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 27rem) minmax(0, 1fr);
       gap: 3rem;
     }
   }
   .ascii {
     margin: 0 0 0.4rem;
-    font-size: clamp(0.42rem, 1.55vw, 0.72rem);
+    font-family: var(--mono);
+    font-size: clamp(0.42rem, 1.55vw, 0.7rem);
     line-height: 1.15;
     color: var(--phosphor);
     text-shadow: var(--glow-strong);
     overflow: hidden;
   }
   .wordmark {
-    font-size: 0.85rem;
-    letter-spacing: 0.55em;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    letter-spacing: 0.5em;
     text-transform: uppercase;
     color: var(--amber);
     text-shadow: var(--glow-amber);
-    margin: 0 0 1.6rem;
+    margin: 0 0 1.5rem;
     font-weight: 500;
   }
   .pitch {
-    font-size: 1.05rem;
-    line-height: 1.7;
-    text-transform: uppercase;
-    letter-spacing: 0.01em;
+    font-size: clamp(1.3rem, 2.6vw, 1.55rem);
+    line-height: 1.4;
+    font-weight: 700;
+    letter-spacing: -0.015em;
     color: var(--ink);
     margin: 0 0 0.9rem;
-    font-weight: 700;
   }
   .sub {
     color: var(--muted);
-    font-size: 0.92rem;
+    font-size: 1.02rem;
     margin: 0 0 1.75rem;
+    max-width: 32rem;
   }
   .install {
     display: flex;
@@ -296,6 +304,7 @@ const ascii = ` ██████╗██╗  ██╗ █████╗ █
     gap: 0.6rem;
     flex-wrap: wrap;
     margin: 0;
+    font-family: var(--mono);
   }
   .button {
     color: var(--amber);
@@ -337,6 +346,7 @@ const ascii = ` ██████╗██╗  ██╗ █████╗ █
   .dot.green { background: #183; }
   .terminal-title {
     margin-left: 0.6rem;
+    font-family: var(--mono);
     font-size: 0.78rem;
     color: var(--muted);
   }
@@ -344,6 +354,7 @@ const ascii = ` ██████╗██╗  ██╗ █████╗ █
   /* ---- Hero session (typed animation) ---- */
   .session {
     padding: 1.1rem 1.2rem 1.3rem;
+    font-family: var(--mono);
     font-size: 0.92rem;
     line-height: 1.9;
     min-height: 15rem;
@@ -411,9 +422,10 @@ const ascii = ` ██████╗██╗  ██╗ █████╗ █
   .gates {
     list-style: none;
     margin: 0;
-    padding: 1.25rem 1.4rem 1.4rem;
+    padding: 1.35rem 1.4rem 1.5rem;
     display: grid;
-    gap: 1.05rem;
+    gap: 1.15rem;
+    font-family: var(--mono);
     font-size: 0.92rem;
   }
   .gate-index {
@@ -428,10 +440,13 @@ const ascii = ` ██████╗██╗  ██╗ █████╗ █
   }
   .gate-desc {
     display: block;
+    font-family: var(--sans);
     color: var(--muted);
-    font-size: 0.88rem;
-    margin-top: 0.15rem;
+    font-size: 0.97rem;
+    line-height: 1.6;
+    margin-top: 0.2rem;
     padding-left: 3.4rem;
+    max-width: 40rem;
   }
 
   /* ---- Quickstart ---- */
@@ -449,25 +464,27 @@ const ascii = ` ██████╗██╗  ██╗ █████╗ █
     align-items: baseline;
     gap: 0.9rem;
     flex-wrap: wrap;
-    padding: 0.6rem 1rem;
-    font-size: 0.92rem;
+    padding: 0.7rem 1rem;
+    font-size: 0.95rem;
   }
   .steps li + li {
     border-top: 1px solid var(--border-dim);
   }
   .step-no {
+    font-family: var(--mono);
     color: var(--muted);
     font-size: 0.8rem;
     user-select: none;
   }
   .steps code {
     color: var(--phosphor);
-    text-shadow: var(--glow);
     min-width: 11rem;
+    font-size: 0.9rem;
   }
   .step-desc {
+    font-family: var(--sans);
     color: var(--muted);
-    font-size: 0.88rem;
+    font-size: 0.95rem;
   }
 
   /* ---- Docs ---- */
@@ -497,6 +514,7 @@ const ascii = ` ██████╗██╗  ██╗ █████╗ █
   }
   .doc-links a {
     color: var(--amber);
+    font-family: var(--mono);
     font-weight: 700;
   }
   .doc-links a.source {
@@ -505,7 +523,8 @@ const ascii = ` ██████╗██╗  ██╗ █████╗ █
     font-size: 0.82em;
   }
   .doc-desc {
+    font-family: var(--sans);
     color: var(--muted);
-    font-size: 0.88rem;
+    font-size: 0.95rem;
   }
 </style>
