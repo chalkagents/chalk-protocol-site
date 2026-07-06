@@ -1,0 +1,87 @@
+---
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('docs');
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const repo = 'https://github.com/chalkagents/chalk-protocol';
+const source = `${repo}/blob/main/${entry.data.file}`;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{entry.data.title} — Chalk Protocol</title>
+    <meta
+      name="description"
+      content={`${entry.data.file} from chalkagents/chalk-protocol, rendered at build time.`}
+    />
+  </head>
+  <body>
+    <main>
+      <nav>
+        <a href="/">&larr; Chalk Protocol</a>
+        <a href={source}>Source: {entry.data.file}</a>
+      </nav>
+      <article>
+        <Content />
+      </article>
+    </main>
+  </body>
+</html>
+
+<style>
+  :root {
+    color-scheme: light dark;
+    --accent: #6d5df6;
+    --ink: #1c1b22;
+    --paper: #fdfcff;
+    --muted: #5f5c6b;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  main {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 3rem;
+  }
+  nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+  nav a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  nav a:hover {
+    text-decoration: underline;
+  }
+  article :global(pre) {
+    overflow-x: auto;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+  }
+  article :global(code) {
+    font-size: 0.95em;
+  }
+  article :global(a) {
+    color: var(--accent);
+  }
+</style>

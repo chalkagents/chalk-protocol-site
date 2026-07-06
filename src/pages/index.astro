@@ -2,9 +2,9 @@
 const repo = 'https://github.com/chalkagents/chalk-protocol';
 const docs = [
   { label: 'README', href: `${repo}/blob/main/README.md`, desc: 'What Chalk Protocol is and why it exists.' },
-  { label: 'PROTOCOL.md', href: `${repo}/blob/main/PROTOCOL.md`, desc: 'The full contract — every gate, spelled out.' },
-  { label: 'QUICKSTART.md', href: `${repo}/blob/main/QUICKSTART.md`, desc: 'From zero to a gated loop in minutes.' },
-  { label: 'RESEARCH.md', href: `${repo}/blob/main/RESEARCH.md`, desc: 'The evidence behind the design.' },
+  { label: 'PROTOCOL.md', href: '/protocol', source: `${repo}/blob/main/PROTOCOL.md`, desc: 'The full contract — every gate, spelled out.' },
+  { label: 'QUICKSTART.md', href: '/quickstart', source: `${repo}/blob/main/QUICKSTART.md`, desc: 'From zero to a gated loop in minutes.' },
+  { label: 'RESEARCH.md', href: '/research', source: `${repo}/blob/main/RESEARCH.md`, desc: 'The evidence behind the design.' },
 ];
 const gates = [
   { name: 'Locked test', desc: 'A real test is authored for the acceptance criteria, then locked read-only. The agent cannot weaken or delete it to pass.' },
@@ -45,7 +45,7 @@ const steps = [
           through a gated loop it cannot talk its way around.
         </p>
         <p class="cta">
-          <a class="button" href={`${repo}/blob/main/QUICKSTART.md`}>Get started</a>
+          <a class="button" href="/quickstart">Get started</a>
           <a class="button ghost" href={repo}>View the repo</a>
         </p>
       </section>
@@ -77,11 +77,12 @@ const steps = [
 
       <section class="docs" id="docs">
         <h2>Docs</h2>
-        <p>Protocol documentation lives in the parent repo — the source of truth this site cannot drift from.</p>
+        <p>Rendered here at build time from the parent repo — the source of truth this site cannot drift from.</p>
         <ul class="doc-links">
           {docs.map((doc) => (
             <li>
               <a href={doc.href}>{doc.label}</a>
+              {doc.source && <a class="source" href={doc.source}>source</a>}
               <span>{doc.desc}</span>
             </li>
           ))}
@@ -201,6 +202,11 @@ const steps = [
   .doc-links a:hover,
   footer a:hover {
     text-decoration: underline;
+  }
+  .doc-links a.source {
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 0.9em;
   }
   footer {
     max-width: 46rem;
