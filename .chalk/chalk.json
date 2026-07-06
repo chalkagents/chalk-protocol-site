@@ -1,0 +1,91 @@
+{
+  "version": "1.0",
+  "project": {
+    "name": "chalk-protocol-site",
+    "description": "Landing page + docs for Chalk Protocol at protocol.chalkagents.com — content sourced from chalkagents/chalk-protocol, built through chalk itself"
+  },
+  "protocol": {
+    "version": "chalk/0",
+    "phase": "discovery",
+    "status": "active",
+    "runner": "",
+    "verify": {
+      "test": "node --test",
+      "typecheck": "",
+      "lint": "",
+      "build": ""
+    },
+    "review": {
+      "command": "claude -p --agent chalk-reviewer --max-turns 20",
+      "requiredAt": [
+        "per-task"
+      ]
+    },
+    "regression": {
+      "command": "node --test .chalk/held-out",
+      "authorCommand": "",
+      "dir": ".chalk/held-out",
+      "required": false,
+      "tests": [],
+      "locPerTest": 2000,
+      "lastAudit": null
+    },
+    "planner": {
+      "command": "claude -p --agent chalk-planner --max-turns 30"
+    },
+    "plan": {
+      "required": false
+    },
+    "executor": {
+      "command": "claude -p --agent chalk-executor --permission-mode acceptEdits --max-turns 40"
+    },
+    "requireTest": true,
+    "breakTest": "node --test {test}",
+    "mutation": "",
+    "handoff": {
+      "command": "",
+      "maxAttempts": 3
+    },
+    "prbody": {
+      "command": ""
+    },
+    "github": {
+      "command": "gh",
+      "base": "main",
+      "repo": "",
+      "deployBase": "main",
+      "mergeMethod": "squash",
+      "labelType": {
+        "bug": "fix",
+        "enhancement": "feat",
+        "documentation": "docs"
+      },
+      "ciPollIntervalMs": 5000,
+      "ciPollAttempts": 24
+    },
+    "worktree": {
+      "enabled": true,
+      "dir": "..",
+      "setup": ""
+    },
+    "e2e": {
+      "command": "",
+      "baseUrl": "",
+      "runsDir": ".chalk/runs"
+    },
+    "retro": {
+      "command": "claude -p --agent chalk-retro --max-turns 20"
+    },
+    "feedback": {
+      "command": ""
+    },
+    "discovery": {
+      "command": ""
+    },
+    "portal": {
+      "dir": ".project"
+    }
+  },
+  "createdAt": "2026-07-06T09:02:37.922Z",
+  "updatedAt": "2026-07-06T09:02:37.924Z"
+}

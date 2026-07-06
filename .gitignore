@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+.vercel/
+
+# Chalk convention — local/machine state and ephemeral runs are not versioned.
+.chalk/local/
+.chalk/skills/
+.chalk/runs/
+.chalk/pipelines/
+.chalk/handoffs/
+# P7 held-out set stays main-only — never checked out into a worktree sandbox (keep README tracked).
+.chalk/held-out/*
+!.chalk/held-out/README.md
