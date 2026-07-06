@@ -110,23 +110,25 @@ const next = index >= 0 && index < DOCS.length - 1 ? DOCS[index + 1] : null;
     font-family: var(--mono);
     font-size: 0.9em;
   }
+  /* Brutalist rule: no rounded corners anywhere — everything is a readout. */
   article :global(:not(pre) > code) {
     background: var(--bg-raised);
-    border: 1px solid var(--border);
-    border-radius: 0.3rem;
+    border: 1px solid var(--border-dim);
+    border-radius: 0;
     padding: 0.1rem 0.35rem;
+    color: var(--phosphor);
   }
   article :global(pre) {
     overflow-x: auto;
     padding: 0.9rem 1.1rem;
-    border-radius: 0.6rem;
+    border-radius: 0;
   }
   article :global(blockquote) {
     margin: 1rem 0;
     padding: 0.1rem 1rem;
-    border-left: 3px solid var(--chalk);
+    border-left: 3px solid var(--phosphor);
     background: var(--bg-raised);
-    border-radius: 0 0.4rem 0.4rem 0;
+    border-radius: 0;
     color: var(--muted);
   }
   article :global(table) {
@@ -190,13 +192,20 @@ const next = index >= 0 && index < DOCS.length - 1 ? DOCS[index + 1] : null;
     gap: 0.15rem;
     text-decoration: none;
     border: 1px solid var(--border);
-    border-radius: 0.6rem;
+    border-radius: 0;
     padding: 0.7rem 1rem;
-    background: var(--bg-raised);
+    background: var(--bg-inset);
     min-width: 10rem;
   }
+  /* Explicit hover colors on card AND children — never inherit an inversion. */
   .pager-link:hover {
-    border-color: var(--accent);
+    border-color: var(--phosphor);
+    box-shadow: 0 0 18px rgba(61, 255, 112, 0.12);
+    text-decoration: none;
+  }
+  .pager-link:hover .pager-title {
+    color: var(--phosphor);
+    text-shadow: var(--glow);
   }
   .pager-link.next {
     text-align: right;
