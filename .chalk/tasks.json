@@ -419,5 +419,310 @@
       "lgtm": true
     },
     "doneAt": "2026-07-06T09:53:16.163Z"
+  },
+  {
+    "id": "task-352db543",
+    "title": "design: professional developer-centric UI/UX pass — landing hierarchy, terminal motif, real docs chrome",
+    "state": "done",
+    "acceptanceCriteria": [
+      {
+        "text": "Landing page: above-the-fold hero with install + CTAs, terminal-motif loop section, gates/quickstart/docs sections with consistent styling."
+      },
+      {
+        "text": "Docs pages: styled markdown (incl. Shiki code blocks), heading anchors, prev/next nav, consistent header/footer chrome."
+      },
+      {
+        "text": "OG/social meta + favicon on every page."
+      },
+      {
+        "text": "All existing locked tests pass unmodified; new/changed presentation covered by at least one new test (e.g. docs chrome present on all three docs pages)."
+      }
+    ],
+    "tests": [],
+    "heldOut": [],
+    "after": [],
+    "issue": {
+      "number": 12,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/issues/12",
+      "body": "## Problem\n\nThe scaffold page is functional but generic. For a tool whose whole pitch is engineering rigor, the page itself is evidence — it should look like it was designed by people who care about developer experience: strong typography, terminal-native aesthetics, skimmable structure, and docs pages that feel like real docs rather than dumped markdown.\n\n## Direction (professional, developer-centric)\n\n**Landing page**\n- Above the fold: pitch + install command + CTAs visible without scrolling on a laptop; tighter visual hierarchy (type scale, spacing rhythm, max-width for prose).\n- A terminal-window motif for the loop section — render the read → work → verify → write loop as a styled terminal session (`$ chalk verify` → RED → fix → GREEN), static markup, no JS. This is the product's money shot: the gate refusing.\n- Section rhythm: loop → gates (the four levers as cards) → quickstart → docs. Each section skimmable in one glance.\n- Real code/pre styling: syntax-tinted, consistent with the terminal motif (Astro's built-in Shiki is available without new deps).\n\n**Docs pages (/protocol, /quickstart, /research)**\n- Readable measure (~70ch), heading anchor links, a small table of contents for long docs, prev/next footer nav between the three docs, \"edit on GitHub\" per page.\n- Style the rendered markdown properly: code blocks (Shiki), tables, blockquotes, lists — currently browser-default.\n\n**Site chrome**\n- Consistent header nav (logo/wordmark, Docs, GitHub, npm) and footer across all pages.\n- OG/social meta: og:title/description/image (a simple generated OG card is fine), favicon, meta description.\n- Accessibility: visible focus states, sufficient contrast in the dark theme, semantic landmarks, `prefers-reduced-motion` respected if anything animates.\n\n## Constraints\n\n- **The locked content contract stays**: `test/site.test.mjs` and `test/docs-pages.test.mjs` are LOCKED — the pitch line, install command, loop steps, quickstart, docs links, and docs rendering behavior must survive the redesign verbatim. Presentation changes, content contract doesn't.\n- No new runtime dependencies beyond `astro` (Shiki ships inside Astro). Zero client-side JS stays the default; if a copy-to-clipboard button is wanted, it's a few lines of inline vanilla JS, not a framework.\n- Performance: the page should stay effectively static — no layout shift, instant paint.\n\n## Acceptance criteria\n\n- [ ] Landing page: above-the-fold hero with install + CTAs, terminal-motif loop section, gates/quickstart/docs sections with consistent styling.\n- [ ] Docs pages: styled markdown (incl. Shiki code blocks), heading anchors, prev/next nav, consistent header/footer chrome.\n- [ ] OG/social meta + favicon on every page.\n- [ ] All existing locked tests pass unmodified; new/changed presentation covered by at least one new test (e.g. docs chrome present on all three docs pages).\n"
+    },
+    "branchType": "feat",
+    "labels": [
+      "enhancement"
+    ],
+    "pipeline": {
+      "stage": "cleaned",
+      "at": "2026-07-06T12:16:30.431Z"
+    },
+    "createdAt": "2026-07-06T11:51:53.407Z",
+    "reviews": [
+      {
+        "at": "2026-07-06T12:16:16.469Z",
+        "by": "adversary",
+        "verdict": "pass",
+        "findings": [
+          {
+            "severity": "med",
+            "area": "regression",
+            "note": "astro.config.mjs imports '@astrojs/markdown-remark' which is NOT a declared dependency — it resolves only because npm hoists it as a transitive dep of astro (the locked build test pins dependencies to ['astro'], so it cannot be declared). This is a phantom-dependency: a future astro minor/patch that re-exports or drops @astrojs/markdown-remark hoisting, or a switch to a strict installer (pnpm), breaks every build. Consider importing rehypeHeadingIds via an astro-exported path or documenting the coupling."
+          },
+          {
+            "severity": "low",
+            "area": "correctness",
+            "note": "OG meta omits og:image and twitter:card is 'summary' with no image, so social cards render text-only. The criterion ('OG/social meta') is arguably satisfied, but a share preview without an image is a weak social card for a launch page."
+          },
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "The terminal-motif and chrome assertions match literal strings like class=\"terminal\" / class=\"doc-pager\"; they hold under Astro's default scopedStyleStrategy 'attribute' but would break spuriously if the strategy changed to class-based scoping — brittle, though currently correct."
+          },
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "site-chrome fixture server answers ANY *.md request with the same fixture, so it cannot detect the loader fetching the wrong file per slug; the pre-existing docs-pages test covers that, so exposure is minimal."
+          },
+          {
+            "severity": "low",
+            "area": "correctness",
+            "note": "heading-anchors deliberately skips h1 to preserve the locked docs-pages assertion `${heading}</h1>` — verified compatible; rehypeHeadingIds still adds the h1 id before the closing tag position asserted, so no locked-test conflict."
+          }
+        ]
+      }
+    ],
+    "handoff": {
+      "path": ".chalk/handoffs/task-352db54-2.md",
+      "at": "2026-07-06T12:04:14.228Z",
+      "reason": "human-input",
+      "seq": 2
+    },
+    "branch": "feat/12-design-professional-developer-centric-ui",
+    "plan": "# Plan — professional developer-centric UI/UX pass\n\n**Approach:** Hand-rolled shared layout + scoped CSS inside `src/` (no new packages — the locked test `build.test.mjs` pins `dependencies === ['astro']`, `devDependencies === {}`, so Tailwind/rehype-slug are off the table). Astro already ships Shiki and `rehypeHeadingIds` by default; heading-anchor links come from a tiny custom rehype plugin in `src/`. Both test sandboxes copy only `src`, `public`, `astro.config.mjs`, `package.json`, `tsconfig.json` — all shared code must live there.\n\n**Steps:**\n1. Add `src/layouts/Base.astro`: shared `<head>` (title/description props, `<link rel=\"icon\" href=\"/favicon.svg\">`, `og:title/og:description/og:url/og:type/og:site_name`, `twitter:card`, canonical via `Astro.site`), site header (logo → `/`, links to docs + repo), footer, and the global design tokens/styles (dark terminal-leaning palette, mono accents).\n2. Add `public/favicon.svg` (simple chalk-mark glyph).\n3. Add `src/lib/heading-anchors.mjs`: rehype plugin appending `<a class=\"heading-anchor\" href=\"#id\">` to **h2–h6 only** — h1 must stay flush so `docs-pages.test.mjs`'s `` `${heading}</h1>` `` assertion keeps passing. Wire it plus `shikiConfig: { themes: { light: 'github-light', dark: 'github-dark' } }` into `astro.config.mjs` markdown config (the content-layer `renderMarkdown` honors it).\n4. Export `DOCS` from `src/content.config.ts`; in `src/pages/[slug].astro` compute prev/next from that order, add docs chrome (Base layout, source link, prev/next nav, styled `article` incl. `.astro-code` blocks, anchor hover styles).\n5. Redesign `src/pages/index.astro` on Base layout: above-the-fold hero (keep the exact locked strings — pitch lines, `>npm install -g chalk-protocol<` as element text, npm/repo hrefs), loop section restyled as a terminal window (keep the four gate names verbatim), quickstart (keep the six `chalk *` commands), docs grid (keep local `/slug` hrefs and the four `blob/main/*.md` source links).\n6. Add `test/site-chrome.test.mjs` (clone the sandbox + fixture-server pattern from `test/npm-package.test.mjs`, fixture markdown includes a fenced code block).\n\n**Files:** `src/layouts/Base.astro` (new), `src/lib/heading-anchors.mjs` (new), `public/favicon.svg` (new), `astro.config.mjs`, `src/content.config.ts`, `src/pages/index.astro`, `src/pages/[slug].astro`, `test/site-chrome.test.mjs` (new).\n\n**Test (fails today, passes after):** `test/site-chrome.test.mjs` — sandbox build, then assert on `dist/index.html` **and all three** `dist/{protocol,quickstart,research}/index.html`: `rel=\"icon\"` favicon link and `property=\"og:title\"` meta present; shared header/footer markers (e.g. `<header` with `href=\"/\"`, `<footer`); docs pages additionally have prev/next nav (`/quickstart` links to both `/protocol` and `/research`), a `class=\"heading-anchor\"` link on an h2, and an `astro-code` Shiki block from the fixture's code fence. None of these exist in the current build.",
+    "startedAt": "2026-07-06T11:57:20.118Z",
+    "attempts": 2,
+    "pr": {
+      "number": 15,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/pull/15",
+      "recorded": true,
+      "lgtm": true
+    },
+    "doneAt": "2026-07-06T12:16:30.431Z"
+  },
+  {
+    "id": "task-f4b3c5b0",
+    "title": "feat: reference the npm package — install command in the hero + link to npmjs.com/package/chalk-protocol",
+    "state": "done",
+    "acceptanceCriteria": [
+      {
+        "text": "The built landing page contains `npm install -g chalk-protocol` as visible, selectable text."
+      },
+      {
+        "text": "The page links to https://www.npmjs.com/package/chalk-protocol."
+      },
+      {
+        "text": "New locked-style test covers both; existing locked tests untouched and green."
+      }
+    ],
+    "tests": [],
+    "heldOut": [],
+    "after": [],
+    "issue": {
+      "number": 11,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/issues/11",
+      "body": "## Problem\n\nChalk Protocol is on npm — https://www.npmjs.com/package/chalk-protocol (`chalk-protocol@0.1.0`, installs the `chalk` bin) — but the landing page never mentions it. The hero's calls-to-action are \"Get started\" and \"View the repo\"; a developer who wants to try it has to leave for GitHub to find the install command. The single highest-intent action on a dev-tool landing page is copying the install line.\n\n## Scope\n\n- Hero: a copy-pasteable install block — `npm install -g chalk-protocol` — styled as a terminal line, above the fold next to the CTAs.\n- An explicit npm link (text link or badge) pointing at https://www.npmjs.com/package/chalk-protocol — hero or footer, wherever it reads naturally alongside the GitHub link.\n- Footer: add npm alongside the existing GitHub link.\n\n## Constraints\n\n- `test/site.test.mjs` is LOCKED (task-3ce754f). Do not edit it — cover the new content with a new test file (e.g. `test/npm-reference.test.mjs`) asserting the built page contains the install command and the npm package URL. If a locked assertion genuinely must change, that's `chalk amend-spec`, a human step.\n- No new dependencies; keep the zero-client-JS property.\n\n## Acceptance criteria\n\n- [ ] The built landing page contains `npm install -g chalk-protocol` as visible, selectable text.\n- [ ] The page links to https://www.npmjs.com/package/chalk-protocol.\n- [ ] New locked-style test covers both; existing locked tests untouched and green.\n"
+    },
+    "branchType": "feat",
+    "labels": [
+      "enhancement"
+    ],
+    "pipeline": {
+      "stage": "cleaned",
+      "at": "2026-07-06T11:55:29.493Z"
+    },
+    "createdAt": "2026-07-06T11:51:53.409Z",
+    "reviews": [
+      {
+        "at": "2026-07-06T11:55:12.048Z",
+        "by": "adversary",
+        "verdict": "pass",
+        "findings": [
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "The visibility assertion (/>npm install -g chalk-protocol</) proves the string is element text in dist/index.html, but does not pin it to the hero section as the task title specifies ('install command in the hero'); the test would still pass if the snippet migrated to the footer. The written acceptance criterion #1 only requires 'the built landing page contains' it, so this is a looseness against the task intent, not the contract. Both tests fail if the diff is reverted, so coverage is non-vacuous."
+          },
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "The link assertion checks only that href=\"https://www.npmjs.com/package/chalk-protocol\" appears somewhere in the HTML; it does not verify it is on an <a> element or that the anchor has visible text. In practice the diff renders it as a visible 'View on npm' CTA button, and the criterion #2 wording ('the page links to') is satisfied."
+          },
+          {
+            "severity": "low",
+            "area": "regression",
+            "note": "node --test runs test files in parallel; three concurrent Astro builds (root build.test.mjs, docs-pages sandbox, npm-package sandbox) share node_modules via symlink and could contend on shared caches (e.g. node_modules/.astro). The sandbox-copy pattern mirrors the pre-existing docs-pages.test.mjs approach and avoids the dist/ race, so risk is pre-existing and not worsened materially. Existing locked tests (build.test.mjs, docs-pages.test.mjs, ci-workflow.test.mjs) are untouched by the diff, satisfying criterion #3."
+          },
+          {
+            "severity": "low",
+            "area": "correctness",
+            "note": "The install command is rendered in <pre><code> with normal CSS (no display:none, no user-select:none), so it is visible and selectable; the npm URL constant matches the required https://www.npmjs.com/package/chalk-protocol exactly."
+          }
+        ]
+      }
+    ],
+    "branch": "feat/11-feat-reference-the-npm-package",
+    "plan": "**Approach:** Add the install command + npm link to the hero in `src/pages/index.astro`, and cover both in a new test file that builds in an isolated tmp sandbox (the `test/docs-pages.test.mjs` pattern) — extending `test/build.test.mjs` is off the table (locked; criterion 3), and a second root `npm run build` would race build.test.mjs on `dist/` under `node --test` parallelism.\n\n**Steps:**\n1. In `src/pages/index.astro` frontmatter, add `const npm = 'https://www.npmjs.com/package/chalk-protocol';`.\n2. In the `.hero` section, add an install snippet as real text, e.g. `<pre class=\"install\"><code>npm install -g chalk-protocol</code></pre>` (plain markup ⇒ visible, selectable), plus a small style rule matching the existing `.steps code` look.\n3. Add a link to the CTA row: `<a class=\"button ghost\" href={npm}>View on npm</a>`.\n4. Create `test/npm-package.test.mjs`: copy the docs-pages sandbox recipe — `mkdtempSync`, copy `src`/`public`/`astro.config.mjs`/`package.json`, symlink `node_modules`, run `npm run build` in the sandbox (async or sync is fine here; no fixture server needed), read `sandbox/dist/index.html`.\n5. Assertions: (a) install command rendered as element text — `assert.match(html, />npm install -g chalk-protocol</)`; (b) `assert.ok(html.includes('href=\"https://www.npmjs.com/package/chalk-protocol\"'))`.\n6. Run `chalk verify` until green; do not touch `test/build.test.mjs`, `test/docs-pages.test.mjs`, `test/ci-workflow.test.mjs`.\n\n**Files:**\n- `src/pages/index.astro` (edit hero + one style rule)\n- `test/npm-package.test.mjs` (new; reuse sandbox pattern from `test/docs-pages.test.mjs`, incl. the `npm install` guard in `before`)\n\n**Test:** `test/npm-package.test.mjs` — fails today (built page has neither the `npm install -g chalk-protocol` text nor the npmjs.com link), passes once the hero changes land.",
+    "startedAt": "2026-07-06T11:53:04.792Z",
+    "attempts": 1,
+    "pr": {
+      "number": 13,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/pull/13",
+      "recorded": true,
+      "lgtm": true
+    },
+    "doneAt": "2026-07-06T11:55:29.493Z"
+  },
+  {
+    "id": "task-4f6c9fec",
+    "title": "design: redesign v2 — full terminal brutalist (CRT phosphor, animated gate-refusal hero, everything is a session)",
+    "state": "done",
+    "acceptanceCriteria": [
+      {
+        "text": "Landing page is the terminal-brutalist design: hero terminal with the animated gate-refusal session, CRT treatment, terminal-framed sections, status-bar footer."
+      },
+      {
+        "text": "All locked tests pass unmodified; site-chrome coverage maintained or extended (e.g. animation is reduced-motion-safe, copy button present)."
+      },
+      {
+        "text": "Docs pages match the aesthetic without losing v1 chrome (anchors, prev/next, source links)."
+      },
+      {
+        "text": "No new deps; client JS limited to the copy interaction."
+      }
+    ],
+    "tests": [],
+    "heldOut": [],
+    "after": [],
+    "issue": {
+      "number": 16,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/issues/16",
+      "body": "## Direction (decided with the maintainer)\n\nRedesign v2: **full terminal brutalist**. The site IS a terminal session — CRT phosphor aesthetic, the gate refusing an agent in a typed animation. charm.sh / terminal.shop energy. This replaces the v1 \"safe dark theme\" (#12/PR #15), which was competent but generic.\n\n## Design spec\n\n- **Whole page monospace** on near-black; green phosphor primary, amber accent; subtle CRT texture (scanlines via CSS gradient overlay, soft glow text-shadow, vignette). All motion respects `prefers-reduced-motion`.\n- **Hero = a terminal window** playing the money shot as a CSS typing animation: `chalk done` → `✗ GATE P4: verify RED — not your call.` → fix → `✓ GREEN` → `✓ done — the gate decided, not the model.` Blinking block cursor.\n- Pitch line rendered as display type (uppercase via CSS `text-transform`; the source text stays the exact locked string).\n- **Install block**: `[ npm install -g chalk-protocol ]` with a copy button (a few lines of inline vanilla JS — the only JS on the page).\n- **Every section framed as terminal output**: gates as `$ chalk gates` output rows, quickstart as a session transcript, docs as an `ls`-style listing. tmux-style status-bar footer with npm / GitHub links.\n- **Docs pages** restyled to match: terminal frame chrome, phosphor markdown styling; keep heading anchors + prev/next from v1.\n\n## Constraints\n\n- LOCKED (do not edit): `test/site.test.mjs`, `test/docs-pages.test.mjs`. The content contract survives verbatim: pitch line, loop steps, quickstart, install command, npm + docs links, docs rendering behavior.\n- `test/site-chrome.test.mjs` may be adapted (not locked) but its coverage level must not drop.\n- No new dependencies; static output; JS budget = the copy button only.\n\n## Acceptance criteria\n\n- [ ] Landing page is the terminal-brutalist design: hero terminal with the animated gate-refusal session, CRT treatment, terminal-framed sections, status-bar footer.\n- [ ] All locked tests pass unmodified; site-chrome coverage maintained or extended (e.g. animation is reduced-motion-safe, copy button present).\n- [ ] Docs pages match the aesthetic without losing v1 chrome (anchors, prev/next, source links).\n- [ ] No new deps; client JS limited to the copy interaction.\n"
+    },
+    "branchType": "feat",
+    "labels": [
+      "enhancement"
+    ],
+    "pipeline": {
+      "stage": "cleaned",
+      "at": "2026-07-06T13:08:50.084Z"
+    },
+    "createdAt": "2026-07-06T12:46:50.918Z",
+    "reviews": [
+      {
+        "at": "2026-07-06T12:57:04.726Z",
+        "by": "adversary",
+        "verdict": "block",
+        "findings": [
+          {
+            "severity": "high",
+            "area": "regression",
+            "note": "Base.astro adds a global `a:hover { background: var(--amber); color:#0a0700 }` while remapping --accent to amber. Astro scopes page styles with :where() (specificity 0), so on docs pages the pager cards (.pager-link, background (0,1,0)) lose to global a:hover (0,1,1): hovering a prev/next pager card paints it amber, but the nested .pager-title span keeps its own color: var(--accent) — now amber — yielding amber-on-amber (invisible) text. Same hazard for .doc-meta links styled with their own colors. This degrades v1 docs chrome, violating criterion 3, and no test exercises hover/contrast."
+          },
+          {
+            "severity": "med",
+            "area": "test-adequacy",
+            "note": "The 'reduced-motion-safe' test only asserts the substring 'prefers-reduced-motion' appears anywhere in the built HTML. Base.astro's brand-mark blink guard alone satisfies it — the test would still pass if the hero session's typing/fade animations were NOT gated (e.g. if the `no-preference` wrapper in index.astro were removed). It does not verify that the gate-refusal session itself is motion-safe, which is the behavior criterion 2 names."
+          },
+          {
+            "severity": "med",
+            "area": "test-adequacy",
+            "note": "Criterion 1 explicitly requires a 'status-bar footer'. The footer was rewritten into a tmux-style status bar (.status-bar, seg-* spans, new npm link) but the only footer assertion is the pre-existing `/<footer[^>]*>/` check — every footer test passes if the status-bar redesign is reverted. Shipped behavior with no covering assertion."
+          },
+          {
+            "severity": "med",
+            "area": "design-intent",
+            "note": "Criterion 3 says docs pages 'match the aesthetic'. src/pages/[slug].astro was untouched: it still applies v1 rounded chrome (article pre border-radius: 0.6rem — which, as `article :where(...) pre`, overrides Base's new `.astro-code { border-radius: 0 }`; plus rounded inline code, blockquotes, pager cards) directly contradicting the declared brutalist 'radius 0' rule. Docs only inherit the palette/mono font by accident of CSS variables; no test asserts docs match the new aesthetic."
+          },
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "Criterion 4 ('no new deps; client JS limited to the copy interaction') is unasserted: no test checks package.json dependencies or that the built landing page ships only the copy script. package.json is currently unchanged, but nothing gates it."
+          },
+          {
+            "severity": "low",
+            "area": "correctness",
+            "note": "The typing animation uses a hard-coded `steps(24, end)` for every command regardless of length (--n varies 11–41 chars), so 'typing' cadence doesn't match per-character reveal; cosmetic only. Also the copy button restores `btn.textContent = prev` — if a user double-clicks within 1200ms the saved `prev` can be '[ copied ✓ ]', permanently sticking the label."
+          }
+        ]
+      },
+      {
+        "at": "2026-07-06T13:05:02.612Z",
+        "by": "adversary",
+        "verdict": "pass",
+        "findings": [
+          {
+            "severity": "med",
+            "area": "correctness",
+            "note": "Hero session command lines use `.line .txt { white-space: pre; overflow: hidden; max-width: 100% }` — the longest typed line ('vim src/gate.mjs        # fix it for real', 41ch) can be permanently clipped with no wrap, scroll, or ellipsis on narrow viewports (~<380px), for both animated and reduced-motion users. No test covers narrow-viewport rendering of the session."
+          },
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "The reduced-motion test is heuristic: it only inspects a fixed 6000-char window after the FIRST no-preference media query and only forbids `opacity:0` before it. Hiding via `visibility:hidden`, `width:0`, or an `opacity:0` placed after the guard-but-outside-it would pass. In particular, the brand-mark blink (`visibility:hidden` keyframe in Base.astro) relies on a separate `prefers-reduced-motion: reduce` guard that NO test asserts — deleting that guard would keep the suite green."
+          },
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "The 'client JS is the copy interaction only' test counts script tags on the landing page only; docs pages are unchecked, so a future script added to Base/[slug] would not violate the criterion-4 test. Also the copy test only asserts the data-copy attribute and the word 'clipboard' — the double-click label-restore behavior specifically called out in the code comment is untested."
+          },
+          {
+            "severity": "low",
+            "area": "regression",
+            "note": "`inlineStylesheets: 'always'` inlines the full CSS bundle into every page (weight increase, no cross-page CSS caching) and the reduced-motion test is now coupled to this build setting — reverting it to the default would break the test for an unrelated reason. Documented trade-off, acceptable for a 4-page site."
+          },
+          {
+            "severity": "low",
+            "area": "design-intent",
+            "note": "The '[slug].astro' comment declares 'no rounded corners anywhere — everything is a readout', but the landing terminal dots use `border-radius: 50%`, and the no-radius test deliberately excludes the landing page. Internally inconsistent with the stated rule, though not a breach of the written acceptance criteria."
+          },
+          {
+            "severity": "low",
+            "area": "correctness",
+            "note": "The hero session container is a <div> with aria-label but no role; most assistive tech ignores aria-label on generic divs, and the timed reveal means the full refusal narrative is in the DOM immediately (good) but the label itself likely isn't announced. Minor a11y polish, untested."
+          }
+        ]
+      }
+    ],
+    "branch": "feat/16-design-redesign-v2-full-terminal",
+    "startedAt": "2026-07-06T12:47:08.671Z",
+    "pr": {
+      "number": 17,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/pull/17",
+      "recorded": true,
+      "lgtm": true
+    },
+    "doneAt": "2026-07-06T13:08:50.083Z"
+  },
+  {
+    "id": "task-499ca372",
+    "title": "fix: verify gate is availability-coupled — root-build tests live-fetch upstream markdown and transient network failures turn verify RED",
+    "state": "todo",
+    "acceptanceCriteria": [],
+    "tests": [],
+    "heldOut": [],
+    "after": [],
+    "issue": {
+      "number": 14,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/issues/14",
+      "body": "Twice today the verify gate went RED on a transient fetch failure (undici timeout against raw.githubusercontent.com) and was green on immediate re-run — once at the root checkout, once blocking the #12 pipeline run mid-sweep. The docs loader's fail-hard behavior is correct for production builds (#6 criterion 2), but it makes every local `chalk verify` and CI run a bet on GitHub raw availability, and a flaky gate erodes trust in RED.\n\nOptions to evaluate (pick in the task):\n- Bounded retry with backoff in the loader for transient errors (timeouts/5xx — NOT 404s, which must stay fail-hard).\n- Point the root-build test at the local fixture server (like test/docs-pages.test.mjs already does) so the deterministic suite is network-free, and keep one explicitly-marked live smoke test for the real upstream default.\n- Both.\n\nAcceptance: `npm test` is deterministic offline except at most one clearly-labeled live test; production build behavior (fail-hard on bad fetch) unchanged; locked tests amended only via `chalk amend-spec` if their assertions must move to fixtures.\n\nFound while dogfooding — the reviewer flagged this exact exposure as a low finding on PR #9."
+    },
+    "branchType": "fix",
+    "labels": [
+      "bug"
+    ],
+    "pipeline": {
+      "stage": "selected",
+      "at": "2026-07-06T12:46:50.921Z"
+    },
+    "createdAt": "2026-07-06T12:46:50.921Z",
+    "reviews": []
   }
 ]

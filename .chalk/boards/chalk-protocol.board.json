@@ -2,7 +2,7 @@
   "id": "proto-834bdbdd8118",
   "name": "chalk-protocol-site — Chalk Protocol",
   "createdAt": 1783328557922,
-  "updatedAt": 1783338288820,
+  "updatedAt": 1783343330083,
   "order": 0,
   "cards": [
     {
@@ -97,6 +97,71 @@
         "prUrl": "https://github.com/chalkagents/chalk-protocol-site/pull/8",
         "evidenceUrl": "https://github.com/chalkagents/chalk-protocol-site/issues/3"
       }
+    },
+    {
+      "id": "task-352db543",
+      "title": "design: professional developer-centric UI/UX pass — landing hierarchy, terminal motif, real docs chrome",
+      "column": "done",
+      "createdAt": 1783338713407,
+      "updatedAt": 1783340190431,
+      "order": 6,
+      "description": "- Landing page: above-the-fold hero with install + CTAs, terminal-motif loop section, gates/quickstart/docs sections with consistent styling.\n- Docs pages: styled markdown (incl. Shiki code blocks), heading anchors, prev/next nav, consistent header/footer chrome.\n- OG/social meta + favicon on every page.\n- All existing locked tests pass unmodified; new/changed presentation covered by at least one new test (e.g. docs chrome present on all three docs pages).",
+      "testArtifact": {
+        "lastRun": {
+          "runId": "done-task-352db543",
+          "status": "passed",
+          "at": 1783340190431
+        },
+        "prNumber": 15,
+        "prUrl": "https://github.com/chalkagents/chalk-protocol-site/pull/15",
+        "evidenceUrl": "https://github.com/chalkagents/chalk-protocol-site/issues/12"
+      }
+    },
+    {
+      "id": "task-f4b3c5b0",
+      "title": "feat: reference the npm package — install command in the hero + link to npmjs.com/package/chalk-protocol",
+      "column": "done",
+      "createdAt": 1783338713409,
+      "updatedAt": 1783338929493,
+      "order": 7,
+      "description": "- The built landing page contains `npm install -g chalk-protocol` as visible, selectable text.\n- The page links to https://www.npmjs.com/package/chalk-protocol.\n- New locked-style test covers both; existing locked tests untouched and green.",
+      "testArtifact": {
+        "lastRun": {
+          "runId": "done-task-f4b3c5b0",
+          "status": "passed",
+          "at": 1783338929493
+        },
+        "prNumber": 13,
+        "prUrl": "https://github.com/chalkagents/chalk-protocol-site/pull/13",
+        "evidenceUrl": "https://github.com/chalkagents/chalk-protocol-site/issues/11"
+      }
+    },
+    {
+      "id": "task-4f6c9fec",
+      "title": "design: redesign v2 — full terminal brutalist (CRT phosphor, animated gate-refusal hero, everything is a session)",
+      "column": "done",
+      "createdAt": 1783342010918,
+      "updatedAt": 1783343330083,
+      "order": 8,
+      "description": "- Landing page is the terminal-brutalist design: hero terminal with the animated gate-refusal session, CRT treatment, terminal-framed sections, status-bar footer.\n- All locked tests pass unmodified; site-chrome coverage maintained or extended (e.g. animation is reduced-motion-safe, copy button present).\n- Docs pages match the aesthetic without losing v1 chrome (anchors, prev/next, source links).\n- No new deps; client JS limited to the copy interaction.",
+      "testArtifact": {
+        "lastRun": {
+          "runId": "done-task-4f6c9fec",
+          "status": "passed",
+          "at": 1783343330083
+        },
+        "prNumber": 17,
+        "prUrl": "https://github.com/chalkagents/chalk-protocol-site/pull/17",
+        "evidenceUrl": "https://github.com/chalkagents/chalk-protocol-site/issues/16"
+      }
+    },
+    {
+      "id": "task-499ca372",
+      "title": "fix: verify gate is availability-coupled — root-build tests live-fetch upstream markdown and transient network failures turn verify RED",
+      "column": "todo",
+      "createdAt": 1783342010921,
+      "updatedAt": 1783342010921,
+      "order": 9
     }
   ]
 }
