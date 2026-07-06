@@ -1,5 +1,6 @@
 ---
 const repo = 'https://github.com/chalkagents/chalk-protocol';
+const npm = 'https://www.npmjs.com/package/chalk-protocol';
 const docs = [
   { label: 'README', href: `${repo}/blob/main/README.md`, desc: 'What Chalk Protocol is and why it exists.' },
   { label: 'PROTOCOL.md', href: '/protocol', source: `${repo}/blob/main/PROTOCOL.md`, desc: 'The full contract — every gate, spelled out.' },
@@ -44,9 +45,11 @@ const steps = [
           Chalk turns an unattended coding agent into a disciplined contributor: every change lands
           through a gated loop it cannot talk its way around.
         </p>
+        <pre class="install"><code>npm install -g chalk-protocol</code></pre>
         <p class="cta">
           <a class="button" href="/quickstart">Get started</a>
           <a class="button ghost" href={repo}>View the repo</a>
+          <a class="button ghost" href={npm}>View on npm</a>
         </p>
       </section>
 
@@ -138,6 +141,16 @@ const steps = [
   .sub {
     color: var(--muted);
     margin: 0 0 1.5rem;
+  }
+  .install {
+    margin: 0 0 1.25rem;
+  }
+  .install code {
+    background: rgba(109, 93, 246, 0.12);
+    border-radius: 0.3rem;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.95em;
+    display: inline-block;
   }
   .cta {
     display: flex;
