@@ -1,5 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { DOCS } from '../lib/docs.mjs';
 
 export async function getStaticPaths() {
   const entries = await getCollection('docs');
@@ -10,78 +12,204 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 const repo = 'https://github.com/chalkagents/chalk-protocol';
 const source = `${repo}/blob/main/${entry.data.file}`;
+const index = DOCS.findIndex((doc) => doc.id === entry.id);
+const prev = index > 0 ? DOCS[index - 1] : null;
+const next = index >= 0 && index < DOCS.length - 1 ? DOCS[index + 1] : null;
 ---
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{entry.data.title} — Chalk Protocol</title>
-    <meta
-      name="description"
-      content={`${entry.data.file} from chalkagents/chalk-protocol, rendered at build time.`}
-    />
-  </head>
-  <body>
-    <main>
-      <nav>
-        <a href="/">&larr; Chalk Protocol</a>
-        <a href={source}>Source: {entry.data.file}</a>
-      </nav>
-      <article>
-        <Content />
-      </article>
-    </main>
-  </body>
-</html>
+<Base
+  title={`${entry.data.title} — Chalk Protocol`}
+  description={`${entry.data.file} from chalkagents/chalk-protocol, rendered at build time.`}
+>
+  <main class="doc">
+    <nav class="doc-meta">
+      <a href="/">&larr; Chalk Protocol</a>
+      <a class="doc-source" href={source}>Source: {entry.data.file}</a>
+    </nav>
+    <article>
+      <Content />
+    </article>
+    <nav class="doc-pager" aria-label="Docs navigation">
+      {prev ? (
+        <a class="pager-link prev" href={`/${prev.id}`}>
+          <span class="pager-label">Previous</span>
+          <span class="pager-title">&larr; {prev.title}</span>
+        </a>
+      ) : (
+        <span class="pager-spacer" />
+      )}
+      {next ? (
+        <a class="pager-link next" href={`/${next.id}`}>
+          <span class="pager-label">Next</span>
+          <span class="pager-title">{next.title} &rarr;</span>
+        </a>
+      ) : (
+        <span class="pager-spacer" />
+      )}
+    </nav>
+  </main>
+</Base>
 
 <style>
-  :root {
-    color-scheme: light dark;
-    --accent: #6d5df6;
-    --ink: #1c1b22;
-    --paper: #fdfcff;
-    --muted: #5f5c6b;
-  }
-  * {
-    box-sizing: border-box;
-  }
-  body {
-    margin: 0;
-    font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-    background: var(--paper);
-    color: var(--ink);
-    line-height: 1.6;
-  }
-  main {
+  .doc {
     max-width: 46rem;
     margin: 0 auto;
-    padding: 2.5rem 1.5rem 3rem;
+    padding: 2.5rem 1.5rem 3.5rem;
   }
-  nav {
+  .doc-meta {
     display: flex;
     justify-content: space-between;
     gap: 0.75rem;
     flex-wrap: wrap;
     margin-bottom: 2rem;
+    font-size: 0.92rem;
   }
-  nav a {
+  .doc-meta a {
     color: var(--accent);
     font-weight: 600;
     text-decoration: none;
   }
-  nav a:hover {
+  .doc-meta a:hover {
     text-decoration: underline;
   }
-  article :global(pre) {
-    overflow-x: auto;
-    padding: 0.75rem 1rem;
-    border-radius: 0.5rem;
+  .doc-meta .doc-source {
+    color: var(--muted);
+    font-weight: 500;
+    font-family: var(--mono);
+    font-size: 0.85rem;
   }
-  article :global(code) {
-    font-size: 0.95em;
+
+  /* Rendered markdown */
+  article :global(h1) {
+    font-size: 2.1rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin: 0 0 1rem;
+  }
+  article :global(h2),
+  article :global(h3),
+  article :global(h4) {
+    letter-spacing: -0.01em;
+    margin: 2.2rem 0 0.6rem;
+  }
+  article :global(h2) {
+    font-size: 1.45rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.4rem;
+  }
+  article :global(h3) {
+    font-size: 1.15rem;
+  }
+  article :global(p),
+  article :global(li) {
+    color: var(--ink);
   }
   article :global(a) {
     color: var(--accent);
+  }
+  article :global(code) {
+    font-family: var(--mono);
+    font-size: 0.9em;
+  }
+  article :global(:not(pre) > code) {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 0.3rem;
+    padding: 0.1rem 0.35rem;
+  }
+  article :global(pre) {
+    overflow-x: auto;
+    padding: 0.9rem 1.1rem;
+    border-radius: 0.6rem;
+  }
+  article :global(blockquote) {
+    margin: 1rem 0;
+    padding: 0.1rem 1rem;
+    border-left: 3px solid var(--chalk);
+    background: var(--bg-raised);
+    border-radius: 0 0.4rem 0.4rem 0;
+    color: var(--muted);
+  }
+  article :global(table) {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.95rem;
+  }
+  article :global(th),
+  article :global(td) {
+    border: 1px solid var(--border);
+    padding: 0.45rem 0.7rem;
+    text-align: left;
+  }
+  article :global(th) {
+    background: var(--bg-raised);
+  }
+  article :global(hr) {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: 2rem 0;
+  }
+  article :global(img) {
+    max-width: 100%;
+  }
+
+  /* Heading anchors injected by src/lib/heading-anchors.mjs */
+  article :global(.heading-anchor) {
+    margin-left: 0.45rem;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-weight: 400;
+    text-decoration: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+  article :global(h2:hover .heading-anchor),
+  article :global(h3:hover .heading-anchor),
+  article :global(h4:hover .heading-anchor),
+  article :global(h5:hover .heading-anchor),
+  article :global(h6:hover .heading-anchor),
+  article :global(.heading-anchor:focus) {
+    opacity: 1;
+  }
+  article :global(.heading-anchor:hover) {
+    color: var(--chalk);
+  }
+
+  /* Prev / next pager */
+  .doc-pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 3rem;
+    border-top: 1px solid var(--border);
+    padding-top: 1.5rem;
+  }
+  .pager-link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    border-radius: 0.6rem;
+    padding: 0.7rem 1rem;
+    background: var(--bg-raised);
+    min-width: 10rem;
+  }
+  .pager-link:hover {
+    border-color: var(--accent);
+  }
+  .pager-link.next {
+    text-align: right;
+    margin-left: auto;
+  }
+  .pager-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  .pager-title {
+    color: var(--accent);
+    font-weight: 600;
   }
 </style>

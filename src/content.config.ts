@@ -1,11 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 import type { Loader } from 'astro/loaders';
-
-const DOCS = [
-  { id: 'protocol', file: 'PROTOCOL.md', title: 'Protocol' },
-  { id: 'quickstart', file: 'QUICKSTART.md', title: 'Quickstart' },
-  { id: 'research', file: 'RESEARCH.md', title: 'Research' },
-] as const;
+import { DOCS } from './lib/docs.mjs';
 
 const docsLoader: Loader = {
   name: 'chalk-protocol-docs',
