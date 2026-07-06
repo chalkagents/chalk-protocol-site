@@ -1,5 +1,8 @@
 node_modules/
 dist/
+# Astro-generated artifacts (types, content-layer cache) — regenerated on every build.
+.astro/
+.astro-cache/
 .DS_Store
 *.log
 .vercel/
