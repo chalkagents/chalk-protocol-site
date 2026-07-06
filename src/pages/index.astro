@@ -1,4 +1,6 @@
 ---
+import Base from '../layouts/Base.astro';
+
 const repo = 'https://github.com/chalkagents/chalk-protocol';
 const npm = 'https://www.npmjs.com/package/chalk-protocol';
 const docs = [
@@ -23,212 +25,316 @@ const steps = [
   { cmd: 'chalk done <id>', desc: 'the merge gate closes the task' },
 ];
 ---
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Chalk Protocol — ship agent-written code through gates, not vibes</title>
-    <meta
-      name="description"
-      content="Chalk Protocol drives coding agents through a gated loop: specced task, locked test, verify, adversarial review, merge gate."
-    />
-  </head>
-  <body>
-    <main>
-      <section class="hero">
-        <h1>Chalk Protocol</h1>
-        <p class="pitch">
-          Ship agent-written code through gates, not vibes — a locked spec decides success, not the model.
-        </p>
-        <p class="sub">
-          Chalk turns an unattended coding agent into a disciplined contributor: every change lands
-          through a gated loop it cannot talk its way around.
-        </p>
-        <pre class="install"><code>npm install -g chalk-protocol</code></pre>
-        <p class="cta">
-          <a class="button" href="/quickstart">Get started</a>
-          <a class="button ghost" href={repo}>View the repo</a>
-          <a class="button ghost" href={npm}>View on npm</a>
-        </p>
-      </section>
+<Base
+  title="Chalk Protocol — ship agent-written code through gates, not vibes"
+  description="Chalk Protocol drives coding agents through a gated loop: specced task, locked test, verify, adversarial review, merge gate."
+>
+  <main>
+    <section class="hero">
+      <p class="eyebrow">Unattended coding agents, held to a contract</p>
+      <h1>Chalk Protocol</h1>
+      <p class="pitch">
+        Ship agent-written code through gates, not vibes — a locked spec decides success, not the model.
+      </p>
+      <p class="sub">
+        Chalk turns an unattended coding agent into a disciplined contributor: every change lands
+        through a gated loop it cannot talk its way around.
+      </p>
+      <pre class="install"><code><span class="prompt" aria-hidden="true">$ </span>npm install -g chalk-protocol</code></pre>
+      <p class="cta">
+        <a class="button" href="/quickstart">Get started</a>
+        <a class="button ghost" href={repo}>View the repo</a>
+        <a class="button ghost" href={npm}>View on npm</a>
+      </p>
+    </section>
 
-      <section class="loop" id="the-loop">
-        <h2>The loop — four gates every change must clear</h2>
-        <p>A specced task enters the loop; nothing merges until all four gates say so.</p>
+    <section class="loop" id="the-loop">
+      <h2>The loop — four gates every change must clear</h2>
+      <p class="section-sub">A specced task enters the loop; nothing merges until all four gates say so.</p>
+      <div class="terminal">
+        <div class="terminal-bar">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span class="terminal-title">chalk verify — 4 gates</span>
+        </div>
         <ol class="gates">
-          {gates.map((gate) => (
+          {gates.map((gate, i) => (
             <li>
+              <span class="gate-index">[{i + 1}/4]</span>
               <strong>{gate.name}</strong>
-              <span>{gate.desc}</span>
+              <span class="gate-desc">{gate.desc}</span>
             </li>
           ))}
         </ol>
-      </section>
+      </div>
+    </section>
 
-      <section class="quickstart" id="quickstart">
-        <h2>Quickstart — the per-task loop</h2>
-        <ol class="steps">
-          {steps.map((step) => (
-            <li>
-              <code>{step.cmd}</code>
-              <span>{step.desc}</span>
-            </li>
-          ))}
-        </ol>
-      </section>
+    <section class="quickstart" id="quickstart">
+      <h2>Quickstart — the per-task loop</h2>
+      <ol class="steps">
+        {steps.map((step) => (
+          <li>
+            <code>{step.cmd}</code>
+            <span>{step.desc}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
 
-      <section class="docs" id="docs">
-        <h2>Docs</h2>
-        <p>Rendered here at build time from the parent repo — the source of truth this site cannot drift from.</p>
-        <ul class="doc-links">
-          {docs.map((doc) => (
-            <li>
+    <section class="docs" id="docs">
+      <h2>Docs</h2>
+      <p class="section-sub">
+        Rendered here at build time from the parent repo — the source of truth this site cannot drift from.
+      </p>
+      <ul class="doc-links">
+        {docs.map((doc) => (
+          <li>
+            <div class="doc-head">
               <a href={doc.href}>{doc.label}</a>
               {doc.source && <a class="source" href={doc.source}>source</a>}
-              <span>{doc.desc}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
-    </main>
-
-    <footer>
-      <p>
-        Built through chalk itself — this site's own changes clear the same four gates.
-        <a href={repo}>chalkagents/chalk-protocol</a>
-      </p>
-    </footer>
-  </body>
-</html>
+            </div>
+            <span>{doc.desc}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </main>
+</Base>
 
 <style>
-  :root {
-    color-scheme: light dark;
-    --accent: #6d5df6;
-    --ink: #1c1b22;
-    --paper: #fdfcff;
-    --muted: #5f5c6b;
-  }
-  * {
-    box-sizing: border-box;
-  }
-  body {
-    margin: 0;
-    font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-    background: var(--paper);
-    color: var(--ink);
-    line-height: 1.6;
-  }
   main {
-    max-width: 46rem;
+    max-width: 62rem;
     margin: 0 auto;
-    padding: 4rem 1.5rem 2rem;
+    padding: 0 1.5rem 4rem;
   }
   section + section {
-    margin-top: 4rem;
+    margin-top: 5rem;
+  }
+  h2 {
+    font-size: 1.7rem;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.4rem;
+  }
+  .section-sub {
+    color: var(--muted);
+    margin: 0 0 1.5rem;
+  }
+
+  /* Hero */
+  .hero {
+    padding: 5.5rem 0 0;
+    max-width: 44rem;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--chalk);
+    margin: 0 0 0.75rem;
+    letter-spacing: 0.02em;
   }
   .hero h1 {
-    font-size: 3rem;
-    margin: 0 0 0.5rem;
-    letter-spacing: -0.02em;
+    font-size: clamp(2.6rem, 7vw, 4rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin: 0 0 1rem;
   }
   .pitch {
     font-size: 1.35rem;
     font-weight: 600;
+    line-height: 1.4;
     margin: 0 0 0.75rem;
   }
   .sub {
     color: var(--muted);
-    margin: 0 0 1.5rem;
+    font-size: 1.05rem;
+    margin: 0 0 1.75rem;
   }
   .install {
-    margin: 0 0 1.25rem;
+    margin: 0 0 1.5rem;
+    display: inline-block;
+    background: var(--bg-inset);
+    border: 1px solid var(--border);
+    border-radius: 0.6rem;
+    padding: 0.7rem 1.1rem;
   }
   .install code {
-    background: rgba(109, 93, 246, 0.12);
-    border-radius: 0.3rem;
-    padding: 0.35rem 0.7rem;
-    font-size: 0.95em;
-    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    color: var(--ink);
+  }
+  .install .prompt {
+    color: var(--chalk);
+    user-select: none;
   }
   .cta {
     display: flex;
     gap: 0.75rem;
     flex-wrap: wrap;
+    margin: 0;
   }
   .button {
     display: inline-block;
-    padding: 0.6rem 1.2rem;
-    border-radius: 0.5rem;
+    padding: 0.6rem 1.25rem;
+    border-radius: 0.55rem;
     background: var(--accent);
-    color: #fff;
+    color: #0a0d13;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 700;
+    border: 1px solid var(--accent);
+  }
+  .button:hover {
+    filter: brightness(1.1);
   }
   .button.ghost {
     background: transparent;
-    color: var(--accent);
-    border: 1px solid var(--accent);
+    color: var(--ink);
+    border: 1px solid var(--border);
+    font-weight: 600;
   }
-  h2 {
-    font-size: 1.6rem;
-    margin: 0 0 0.5rem;
+  .button.ghost:hover {
+    border-color: var(--muted);
+    filter: none;
   }
-  .gates,
-  .steps {
-    padding-left: 1.25rem;
+
+  /* The loop — terminal motif */
+  .terminal {
+    background: var(--bg-inset);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  }
+  .terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.6rem 1rem;
+    background: var(--bg-raised);
+    border-bottom: 1px solid var(--border);
+  }
+  .dot {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: var(--border);
+  }
+  .dot.red {
+    background: #f87171;
+  }
+  .dot.yellow {
+    background: #fbbf24;
+  }
+  .dot.green {
+    background: #34d399;
+  }
+  .terminal-title {
+    margin-left: 0.6rem;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .gates {
+    list-style: none;
+    margin: 0;
+    padding: 1.25rem 1.4rem 1.4rem;
     display: grid;
-    gap: 0.75rem;
-    margin: 1rem 0 0;
+    gap: 1rem;
+    font-family: var(--mono);
+    font-size: 0.92rem;
+  }
+  .gate-index {
+    color: var(--chalk);
+    margin-right: 0.5rem;
   }
   .gates strong {
-    display: block;
+    color: var(--ink);
   }
-  .gates span,
-  .steps span,
-  .doc-links span {
+  .gate-desc {
+    display: block;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 0.95rem;
+    margin-top: 0.15rem;
+    padding-left: 3.4rem;
+  }
+
+  /* Quickstart */
+  .steps {
+    list-style: none;
+    counter-reset: step;
+    padding: 0;
+    display: grid;
+    gap: 0.6rem;
+    margin: 1.25rem 0 0;
+  }
+  .steps li {
+    counter-increment: step;
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    border: 1px solid var(--border);
+    border-radius: 0.6rem;
+    background: var(--bg-raised);
+    padding: 0.65rem 1rem;
+  }
+  .steps li::before {
+    content: counter(step, decimal-leading-zero);
+    font-family: var(--mono);
+    font-size: 0.8rem;
     color: var(--muted);
   }
   .steps code {
-    background: rgba(109, 93, 246, 0.12);
-    border-radius: 0.3rem;
-    padding: 0.1rem 0.4rem;
-    font-size: 0.95em;
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    color: var(--chalk);
   }
   .steps span {
-    margin-left: 0.5rem;
+    color: var(--muted);
   }
+
+  /* Docs grid */
   .doc-links {
     list-style: none;
     padding: 0;
-    margin: 1rem 0 0;
+    margin: 1.25rem 0 0;
     display: grid;
-    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 0.9rem;
+  }
+  .doc-links li {
+    border: 1px solid var(--border);
+    border-radius: 0.6rem;
+    background: var(--bg-raised);
+    padding: 1rem 1.1rem;
+  }
+  .doc-links li:hover {
+    border-color: var(--accent);
+  }
+  .doc-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.3rem;
   }
   .doc-links a {
     color: var(--accent);
+    font-family: var(--mono);
     font-weight: 600;
     text-decoration: none;
-    margin-right: 0.5rem;
   }
-  .doc-links a:hover,
-  footer a:hover {
+  .doc-links a:hover {
     text-decoration: underline;
   }
   .doc-links a.source {
     color: var(--muted);
     font-weight: 400;
-    font-size: 0.9em;
+    font-size: 0.85em;
   }
-  footer {
-    max-width: 46rem;
-    margin: 0 auto;
-    padding: 2rem 1.5rem 3rem;
+  .doc-links span {
     color: var(--muted);
-    border-top: 1px solid rgba(95, 92, 107, 0.25);
-  }
-  footer a {
-    color: var(--accent);
+    font-size: 0.95rem;
   }
 </style>
