@@ -82,7 +82,7 @@ const ascii = ` ██████╗██╗  ██╗ █████╗ █
         </p>
       </div>
 
-      <div class="terminal hero-session" aria-label="A chalk session: the gate refuses an unverified done">
+      <div class="terminal hero-session" role="img" aria-label="A chalk session: the gate refuses an unverified done">
         <div class="terminal-bar">
           <span class="dot red"></span>
           <span class="dot yellow"></span>
@@ -347,17 +347,26 @@ const ascii = ` ██████╗██╗  ██╗ █████╗ █
     font-size: 0.92rem;
     line-height: 1.9;
     min-height: 15rem;
+    /* Long command lines scroll like a real terminal — never clip silently. */
+    overflow-x: auto;
+  }
+  @media (max-width: 30rem) {
+    .session {
+      font-size: 0.8rem;
+    }
   }
   .line {
     white-space: pre-wrap;
     word-break: break-word;
+  }
+  .line.cmd {
+    white-space: pre;
   }
   .line .txt {
     display: inline-block;
     overflow: hidden;
     white-space: pre;
     vertical-align: bottom;
-    max-width: 100%;
   }
   .line.out.err {
     color: var(--red);
