@@ -1,0 +1,102 @@
+{
+  "id": "proto-834bdbdd8118",
+  "name": "chalk-protocol-site — Chalk Protocol",
+  "createdAt": 1783328557922,
+  "updatedAt": 1783338288820,
+  "order": 0,
+  "cards": [
+    {
+      "id": "task-3ce754f1",
+      "title": "feat: scaffold the Astro landing page — hero, the loop, quickstart, docs links",
+      "column": "done",
+      "createdAt": 1783328721113,
+      "updatedAt": 1783329038387,
+      "order": 0,
+      "description": "- `npm run build` produces `dist/index.html` from a clean checkout.\n- The page contains: the pitch line, the loop with the four gates, the quickstart steps, and working links to the parent repo docs.\n- `node --test` is green and actually exercises the build (fails if the hero content is removed).\n- No dependencies beyond `astro` itself.",
+      "testArtifact": {
+        "lastRun": {
+          "runId": "done-task-3ce754f1",
+          "status": "passed",
+          "at": 1783329038387
+        },
+        "prNumber": 2,
+        "prUrl": "https://github.com/chalkagents/chalk-protocol-site/pull/2",
+        "evidenceUrl": "https://github.com/chalkagents/chalk-protocol-site/issues/1"
+      }
+    },
+    {
+      "id": "task-5fc307d0",
+      "title": "feat: rebuild-on-upstream-change — Vercel deploy hook triggered from chalk-protocol CI",
+      "column": "in_progress",
+      "createdAt": 1783331371659,
+      "updatedAt": 1783331371659,
+      "order": 1,
+      "description": "- Editing a rendered doc on chalk-protocol main triggers a production rebuild here within minutes.\n- No secret material lands in either repo's git history; hook secret lives only in chalk-protocol's Actions secrets."
+    },
+    {
+      "id": "task-13052f31",
+      "title": "feat: build-time docs rendering from chalk-protocol markdown (/protocol, /quickstart, /research)",
+      "column": "done",
+      "createdAt": 1783331371663,
+      "updatedAt": 1783338126994,
+      "order": 2,
+      "description": "- `/protocol`, `/quickstart`, `/research` render the parent repo's current markdown at build time.\n- A failed fetch fails `npm run build` (non-zero), it does not ship an empty page.\n- Landing-page docs links point at the local pages; locked test covers all three pages.",
+      "testArtifact": {
+        "specPath": "test/docs-pages.test.mjs",
+        "lastRun": {
+          "runId": "done-task-13052f31",
+          "status": "passed",
+          "at": 1783338126994
+        },
+        "prNumber": 9,
+        "prUrl": "https://github.com/chalkagents/chalk-protocol-site/pull/9",
+        "evidenceUrl": "https://github.com/chalkagents/chalk-protocol-site/issues/6"
+      }
+    },
+    {
+      "id": "task-9c9377a6",
+      "title": "chore(security): safe Vercel wiring for a public repo — main-only production, fork-approval previews, zero secrets",
+      "column": "in_progress",
+      "createdAt": 1783331371663,
+      "updatedAt": 1783331371663,
+      "order": 3,
+      "description": "- Vercel project connected to `chalkagents/chalk-protocol-site`, framework=Astro, production branch = `main` ONLY.\n- Fork safety: \"Require authorization for deployments from forked repositories\" enabled (member approval before a fork PR gets a preview); no env vars configured at all (the site needs none — if one ever appears, scope it to Production only, never Preview).\n- Deployment protection for previews if on Pro (password/SSO); otherwise accept public unguessable preview URLs — fine for a marketing site.\n- Domain: `protocol.chalkagents.com` CNAME → Vercel; `chalk-protocol-site.vercel.app` until DNS is ready.\n- After the domain is live: set `chalkagents/chalk-protocol`'s repo `homepage` field and add the link to its README (small PR in the parent repo).\n- Production deploys only from pushes to main; PR previews require member approval for forks.\n- No env vars / secrets in this repo or exposed to previews.\n- Site reachable at the production URL."
+    },
+    {
+      "id": "task-27ac9e89",
+      "title": "chore(security): branch-protect main — PR + required test check, squash-only, Dependabot",
+      "column": "done",
+      "createdAt": 1783331371664,
+      "updatedAt": 1783338288820,
+      "order": 4,
+      "description": "- Direct push to main is rejected; PRs without a green `test` check cannot merge.\n- `chalk pipeline` still lands an issue-backed task end-to-end under protection (squash via PR is unaffected).\n- Dependabot security alerts enabled.",
+      "testArtifact": {
+        "lastRun": {
+          "runId": "done-task-27ac9e89",
+          "status": "passed",
+          "at": 1783338288820
+        },
+        "evidenceUrl": "https://github.com/chalkagents/chalk-protocol-site/issues/4"
+      }
+    },
+    {
+      "id": "task-8286522e",
+      "title": "ci: GitHub Actions verify lane — node --test on PRs + main (remote broke-check for the merge gate)",
+      "column": "done",
+      "createdAt": 1783331371664,
+      "updatedAt": 1783331596163,
+      "order": 5,
+      "description": "- CI runs on PRs and on pushes to main; green on the current main.\n- Workflow declares explicit read-only `permissions` and uses no secrets.\n- `chalk merge`'s broke-check reports source=remote-CI (not local fallback) on the next issue-backed PR.",
+      "testArtifact": {
+        "lastRun": {
+          "runId": "done-task-8286522e",
+          "status": "passed",
+          "at": 1783331596163
+        },
+        "prNumber": 8,
+        "prUrl": "https://github.com/chalkagents/chalk-protocol-site/pull/8",
+        "evidenceUrl": "https://github.com/chalkagents/chalk-protocol-site/issues/3"
+      }
+    }
+  ]
+}

@@ -1,1 +1,423 @@
-[]
+[
+  {
+    "id": "task-3ce754f1",
+    "title": "feat: scaffold the Astro landing page — hero, the loop, quickstart, docs links",
+    "state": "done",
+    "acceptanceCriteria": [
+      {
+        "text": "`npm run build` produces `dist/index.html` from a clean checkout."
+      },
+      {
+        "text": "The page contains: the pitch line, the loop with the four gates, the quickstart steps, and working links to the parent repo docs."
+      },
+      {
+        "text": "`node --test` is green and actually exercises the build (fails if the hero content is removed)."
+      },
+      {
+        "text": "No dependencies beyond `astro` itself."
+      }
+    ],
+    "tests": [],
+    "heldOut": [],
+    "after": [],
+    "issue": {
+      "number": 1,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/issues/1",
+      "body": "## Goal\n\nA deployable first cut of the landing page: an Astro static site with a hero that pitches the protocol, the read → work → verify → write loop, a quickstart install block, and links to the source-of-truth docs in `chalkagents/chalk-protocol`.\n\n## Scope\n\n- Astro project at the repo root: `npm run dev` / `npm run build` → static output in `dist/`.\n- Single page (`src/pages/index.astro`) with these sections:\n  - **Hero** — name, one-line pitch (\"a layer-2 harness for coding agents: the agent never self-declares done\"), `npm install -g chalk-protocol` (or the actual install command from the parent README), link to GitHub.\n  - **The loop** — read → work → verify → write, one line per gate (verify gate, locked tests, adversarial review, held-out audit).\n  - **Quickstart** — the 4-step `chalk init` → `chalk spec` → `chalk verify` → `chalk done` flow.\n  - **Docs links** — PROTOCOL.md, QUICKSTART.md, RESEARCH.md on the parent repo (build-time markdown rendering is a follow-up issue, not this one).\n- Dark, terminal-flavored styling; no client-side JS; no extra dependencies beyond Astro.\n- A locked test (`test/site.test.mjs`, plain `node --test`) that installs deps if missing, runs the build, and asserts `dist/index.html` exists and contains the pitch line, the install command, and the GitHub link.\n\n## Non-goals\n\n- Build-time markdown rendering from the parent repo (follow-up).\n- Vercel project + domain wiring (follow-up; needs dashboard access).\n- Analytics, OG images, multi-page docs.\n\n## Acceptance criteria\n\n- [ ] `npm run build` produces `dist/index.html` from a clean checkout.\n- [ ] The page contains: the pitch line, the loop with the four gates, the quickstart steps, and working links to the parent repo docs.\n- [ ] `node --test` is green and actually exercises the build (fails if the hero content is removed).\n- [ ] No dependencies beyond `astro` itself.\n"
+    },
+    "branchType": "feat",
+    "labels": [
+      "enhancement"
+    ],
+    "pipeline": {
+      "stage": "cleaned",
+      "at": "2026-07-06T09:10:38.387Z"
+    },
+    "createdAt": "2026-07-06T09:05:21.113Z",
+    "reviews": [
+      {
+        "at": "2026-07-06T09:10:23.508Z",
+        "by": "adversary",
+        "verdict": "pass",
+        "findings": [
+          {
+            "severity": "low",
+            "area": "design-intent",
+            "note": "Generated `.astro/` artifacts (content.d.ts, content-assets.mjs, types.d.ts) are committed even though they are build-time output and reference a non-existent `src/content.config.mjs`. Astro regenerates these on build so nothing breaks, but they are stale noise that would confuse `astro check`/editor TS and should be gitignored like dist/."
+          },
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "test/build.test.mjs `before` hook runs `npm install` when node_modules is absent, making the test depend on network access on a clean checkout. Acceptable given criterion 1 requires building from a clean checkout, but a registry outage will report as a test failure rather than a build defect."
+          },
+          {
+            "severity": "low",
+            "area": "correctness",
+            "note": "Criterion 2 requires 'working links to the parent repo docs'. The test only asserts the href strings (README.md, PROTOCOL.md, QUICKSTART.md, RESEARCH.md) exist in the HTML; nothing verifies those files actually exist in chalkagents/chalk-protocol (e.g., RESEARCH.md). Link liveness is unverifiable offline, so this is noted, not blocking."
+          },
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "Adequacy is otherwise solid: the suite rebuilds on every run and asserts dist/index.html, the exact pitch line (fails if hero content is removed), all four gate names, the quickstart chalk commands, all four doc URLs, and that package.json's only dependency is astro — so reverting the change makes the suite fail, satisfying the non-vacuous-coverage rule."
+          }
+        ]
+      }
+    ],
+    "branch": "feat/1-feat-scaffold-the-astro-landing",
+    "plan": "Repo surveyed: it's an empty scaffold — only `.chalk/`, `CLAUDE.md`, `AGENTS.md`, `README.md`. No `package.json`, no Astro, no tests. Verify runs `node --test` only (no separate build lane), so the test itself must drive the build.\n\n## Plan\n\n**Approach:** Hand-write a minimal Astro scaffold (package.json + astro.config.mjs + one `index.astro` page) rather than `npm create astro` (which drags in templates/tsconfig noise and risks extra deps). The `node --test` file shells out to `npm run build` then asserts on `dist/index.html` content — this is the only way criterion 3 (\"test exercises the build\") is met given verify's single `node --test` lane.\n\n**Steps:**\n1. Create `package.json`: name `chalk-protocol-site`, `\"type\": \"module\"`, scripts `dev: astro dev`, `build: astro build`, `test: node --test`; sole dependency `astro` (pinned `^5`). Run of `npm install` is executor's local concern; commit `package-lock.json` for clean-checkout reproducibility.\n2. Create `astro.config.mjs` with `defineConfig({ site: 'https://protocol.chalkagents.com' })`.\n3. Create `src/pages/index.astro` — single self-contained page, inline `<style>`, containing:\n   - **Hero/pitch line**: use the spec's pitch verbatim: \"Landing page + docs for Chalk Protocol…\" style tagline (e.g. `<h1>Chalk Protocol</h1>` + pitch `<p class=\"pitch\">`).\n   - **The loop with four gates** (per README): specced task → **locked test** → **verify** → **adversarial review** → **merge gate** — render the four gates as a list/ol.\n   - **Quickstart steps**: the per-task loop (`chalk next` → `chalk context` → `chalk start` → code → `chalk verify` → `chalk review` → `chalk done`).\n   - **Docs links**: absolute `https://github.com/chalkagents/chalk-protocol` links to `README.md`, `PROTOCOL.md`, `QUICKSTART.md`, `RESEARCH.md` (paths under `blob/main/`).\n4. Create `test/build.test.mjs` (node:test + node:assert): `execSync('npm run build', { stdio: 'inherit' })` in a `before` hook, then read `dist/index.html` and assert: file exists; contains the exact pitch-line string; contains all four gate names; contains quickstart step text (`chalk verify`); contains each of the four parent-repo doc URLs. Give the test a generous timeout (~120s) for the build.\n5. Add `.gitignore` entries for `node_modules/` and `dist/` (append to existing file).\n\n**Files:** `package.json`, `package-lock.json`, `astro.config.mjs`, `src/pages/index.astro`, `test/build.test.mjs`, `.gitignore` (append). No existing utils to reuse — greenfield.\n\n**Test:** `test/build.test.mjs` — builds the site and asserts `dist/index.html` contains the pitch line, the four gates, quickstart steps, and the four doc links. It FAILS today (no build exists) and fails again if the hero/pitch content is removed from `index.astro`, satisfying criterion 3.\n\n**Watch-outs:** keep `dependencies` to exactly `astro` (criterion 4 — no `@astrojs/*` integrations, no typescript); assert on strings that appear only in page content, not in boilerplate, so removing the hero genuinely breaks the test.",
+    "startedAt": "2026-07-06T09:06:51.665Z",
+    "attempts": 1,
+    "pr": {
+      "number": 2,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/pull/2",
+      "recorded": true,
+      "lgtm": true
+    },
+    "doneAt": "2026-07-06T09:10:38.387Z"
+  },
+  {
+    "id": "task-5fc307d0",
+    "title": "feat: rebuild-on-upstream-change — Vercel deploy hook triggered from chalk-protocol CI",
+    "state": "blocked",
+    "acceptanceCriteria": [
+      {
+        "text": "Editing a rendered doc on chalk-protocol main triggers a production rebuild here within minutes."
+      },
+      {
+        "text": "No secret material lands in either repo's git history; hook secret lives only in chalk-protocol's Actions secrets."
+      }
+    ],
+    "tests": [],
+    "heldOut": [],
+    "after": [],
+    "issue": {
+      "number": 7,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/issues/7",
+      "body": "## Goal\n\nThe site rebuilds when `chalkagents/chalk-protocol` changes, so build-time-rendered docs stay fresh without manual redeploys.\n\n## Scope\n\n- Create a **Vercel Deploy Hook** (unauthenticated secret URL) for this project's production branch.\n- Store it as an Actions secret **in the parent repo** (`chalk-protocol`), NOT here — this repo stays secretless.\n- Parent-repo workflow (small PR to `chalkagents/chalk-protocol`): on push to `main` touching `README.md|PROTOCOL.md|QUICKSTART.md|RESEARCH.md`, `curl -X POST \"$SITE_DEPLOY_HOOK\"`. Explicit `permissions: contents: read`; the secret is never exposed to fork PRs (push-trigger only).\n- Alternative considered: `repository_dispatch` + PAT — rejected (a PAT is a broader credential than a single-purpose deploy hook URL).\n\n## Acceptance criteria\n\n- [ ] Editing a rendered doc on chalk-protocol main triggers a production rebuild here within minutes.\n- [ ] No secret material lands in either repo's git history; hook secret lives only in chalk-protocol's Actions secrets.\n\nDepends on: Vercel project issue; pairs with the build-time docs rendering issue.\n"
+    },
+    "branchType": "feat",
+    "labels": [
+      "enhancement"
+    ],
+    "pipeline": {
+      "stage": "selected",
+      "at": "2026-07-06T09:49:31.658Z"
+    },
+    "createdAt": "2026-07-06T09:49:31.659Z",
+    "reviews": [],
+    "blockedFrom": "specd",
+    "block": {
+      "needs": "creds",
+      "reason": "needs a Vercel Deploy Hook URL from the dashboard, stored as an Actions secret in chalk-protocol (this repo stays secretless)",
+      "at": "2026-07-06T09:50:09.508Z"
+    },
+    "handoff": {
+      "path": ".chalk/handoffs/task-5fc307d-1.md",
+      "at": "2026-07-06T09:50:09.523Z",
+      "reason": "creds",
+      "seq": 1
+    }
+  },
+  {
+    "id": "task-13052f31",
+    "title": "feat: build-time docs rendering from chalk-protocol markdown (/protocol, /quickstart, /research)",
+    "state": "done",
+    "acceptanceCriteria": [
+      {
+        "text": "`/protocol`, `/quickstart`, `/research` render the parent repo's current markdown at build time."
+      },
+      {
+        "text": "A failed fetch fails `npm run build` (non-zero), it does not ship an empty page."
+      },
+      {
+        "text": "Landing-page docs links point at the local pages; locked test covers all three pages."
+      }
+    ],
+    "tests": [
+      {
+        "path": "test/docs-pages.test.mjs",
+        "sha256": "15892a308f4ba700c4d8571493796bf192fde820d8aa4e5e9af6f9513b42c87b"
+      }
+    ],
+    "heldOut": [],
+    "after": [],
+    "issue": {
+      "number": 6,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/issues/6",
+      "body": "## Goal\n\nDocs pages rendered at build time from the source-of-truth markdown in `chalkagents/chalk-protocol` (README, PROTOCOL.md, QUICKSTART.md, RESEARCH.md) — the site can never drift from the repo.\n\n## Scope\n\n- Build-time fetch from `raw.githubusercontent.com/chalkagents/chalk-protocol/main/...` (public repo — no token, no secrets).\n- Render each doc as a page (`/protocol`, `/quickstart`, `/research`) with the site's terminal-dark styling; rewrite relative repo links to absolute GitHub URLs.\n- **Fail the build loudly** if a fetch fails (a half-empty docs page shipping silently is worse than a red deploy).\n- Markdown rendering via Astro's built-in content pipeline — keep the \"no deps beyond astro\" property if possible; if a markdown lib is unavoidable, justify it in the PR.\n- Locked test: build with the real fetch and assert each docs page contains a known heading from its source doc.\n\n## Acceptance criteria\n\n- [ ] `/protocol`, `/quickstart`, `/research` render the parent repo's current markdown at build time.\n- [ ] A failed fetch fails `npm run build` (non-zero), it does not ship an empty page.\n- [ ] Landing-page docs links point at the local pages; locked test covers all three pages.\n"
+    },
+    "branchType": "feat",
+    "labels": [
+      "enhancement"
+    ],
+    "pipeline": {
+      "stage": "cleaned",
+      "at": "2026-07-06T11:42:06.997Z"
+    },
+    "createdAt": "2026-07-06T09:49:31.663Z",
+    "reviews": [
+      {
+        "at": "2026-07-06T10:06:10.041Z",
+        "by": "adversary",
+        "verdict": "block",
+        "findings": [
+          {
+            "severity": "high",
+            "area": "test-adequacy",
+            "note": "Criterion 3 explicitly requires a LOCKED test covering all three pages, but the task's locked acceptance tests list is '(none)'. test/docs-pages.test.mjs does cover /protocol, /quickstart, /research, the landing links, and the failed-fetch build failure, but it is not registered as a locked test, so it can be freely weakened or deleted later — the 'locked' clause of the contract is unmet. Register it via the sanctioned path (e.g. chalk amend-spec --test test/docs-pages.test.mjs) before this can pass."
+          },
+          {
+            "severity": "med",
+            "area": "test-adequacy",
+            "note": "The render tests only assert 'some h1/h2 exists' and a source link back to GitHub; they never compare page content against the fetched upstream markdown. Criterion 1 ('renders the parent repo's CURRENT markdown') would still 'pass' if the loader silently served stale/cached or partially wrong content, as long as any heading rendered. Only the DOCS_BASE_URL failure test ties output to the fetch path at all."
+          },
+          {
+            "severity": "med",
+            "area": "regression",
+            "note": "The failed-fetch test and the sandbox build share the repo's node_modules (symlinked), so Astro's content-layer data store under node_modules/.astro is shared between the root build (test/build.test.mjs) and both sandbox builds. --test-concurrency=1 serializes test FILES, but this relies on undocumented file-ordering and shared-cache behavior; a future removal of that flag (or parallel CI shards) reintroduces the race the comment warns about. Consider an isolated cache dir per build instead of a global concurrency clamp."
+          },
+          {
+            "severity": "low",
+            "area": "design-intent",
+            "note": "Generated artifacts (.astro/collections/docs.schema.json, .astro/content.d.ts) are committed as part of the change; these are build outputs Astro regenerates and will churn/drift (content.d.ts already points at src/content.config.js while the source is content.config.ts)."
+          },
+          {
+            "severity": "low",
+            "area": "correctness",
+            "note": "The heading assertion /<h[12][\\s>]/ and the slug.toUpperCase() source-link check depend on upstream markdown shape and the PROTOCOL/QUICKSTART/RESEARCH naming convention; an upstream doc starting at h3 or a renamed file makes the suite fail for reasons unrelated to this site's code. Acceptable for a build-time mirror, but worth noting as fragility, and the happy-path build requires live network access to raw.githubusercontent.com."
+          }
+        ]
+      },
+      {
+        "at": "2026-07-06T10:31:47.631Z",
+        "by": "adversary",
+        "verdict": "pass",
+        "findings": [
+          {
+            "severity": "low",
+            "area": "regression",
+            "note": "The root `npm run build` (exercised by the pre-existing locked test test/build.test.mjs and by `chalk verify`) now performs live fetches to raw.githubusercontent.com/chalkagents/chalk-protocol/main. Offline, rate-limited, or upstream-renamed-file scenarios will fail an existing test suite that previously had no network dependency. This is arguably by design (criterion 2 demands fail-hard), but it makes CI availability-coupled to GitHub raw."
+          },
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "The failed-fetch test only exercises the connection-refused path (DOCS_BASE_URL=http://127.0.0.1:1). The non-ok HTTP status branch (res.ok false, e.g. 404 from a moved upstream file) and the empty-body guard in content.config.ts are never directly exercised by any test, though they share the same throw-in-loader failure mechanism proven by the covered case."
+          },
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "Criterion 1's 'parent repo's current markdown' default is verified only by grepping the source text of content.config.ts for the literal URL, not by observing a real fetch. It is, however, indirectly covered end-to-end by the root build in test/build.test.mjs, which builds with DOCS_BASE_URL unset and therefore exercises the default."
+          },
+          {
+            "severity": "low",
+            "area": "design-intent",
+            "note": "The diff commits generated Astro artifacts (.astro/collections/docs.schema.json, .astro/content.d.ts edits) while simultaneously adding .astro/ to .gitignore. Once tracked, gitignore does not untrack them; these generated files will drift from future builds. They should be removed from version control."
+          },
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "Both test/build.test.mjs and test/docs-pages.test.mjs check existsSync(node_modules) and run `npm install` in their before hooks; under node --test's default parallel file execution on a clean checkout, two concurrent installs into the same root could race. Existing pattern, but the new file doubles the exposure."
+          },
+          {
+            "severity": "low",
+            "area": "correctness",
+            "note": "src/pages/[slug].astro is a top-level catch-all dynamic route. Today it only emits /protocol, /quickstart, /research, but any future top-level static page must be checked for route-priority interaction. No current conflict (only index.astro exists)."
+          }
+        ]
+      }
+    ],
+    "handoff": {
+      "path": ".chalk/handoffs/task-13052f3-4.md",
+      "at": "2026-07-06T10:33:06.550Z",
+      "reason": "human-input",
+      "seq": 4
+    },
+    "branch": "feat/6-feat-build-time-docs-rendering",
+    "plan": "You've hit your session limit · resets 7:30pm (Asia/Manila)",
+    "startedAt": "2026-07-06T09:55:22.384Z",
+    "attempts": 4,
+    "pr": {
+      "number": 9,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/pull/9",
+      "recorded": true,
+      "lgtm": true
+    },
+    "doneAt": "2026-07-06T11:42:06.994Z"
+  },
+  {
+    "id": "task-9c9377a6",
+    "title": "chore(security): safe Vercel wiring for a public repo — main-only production, fork-approval previews, zero secrets",
+    "state": "blocked",
+    "acceptanceCriteria": [
+      {
+        "text": "Vercel project connected to `chalkagents/chalk-protocol-site`, framework=Astro, production branch = `main` ONLY."
+      },
+      {
+        "text": "Fork safety: \"Require authorization for deployments from forked repositories\" enabled (member approval before a fork PR gets a preview); no env vars configured at all (the site needs none — if one ever appears, scope it to Production only, never Preview)."
+      },
+      {
+        "text": "Deployment protection for previews if on Pro (password/SSO); otherwise accept public unguessable preview URLs — fine for a marketing site."
+      },
+      {
+        "text": "Domain: `protocol.chalkagents.com` CNAME → Vercel; `chalk-protocol-site.vercel.app` until DNS is ready."
+      },
+      {
+        "text": "After the domain is live: set `chalkagents/chalk-protocol`'s repo `homepage` field and add the link to its README (small PR in the parent repo)."
+      },
+      {
+        "text": "Production deploys only from pushes to main; PR previews require member approval for forks."
+      },
+      {
+        "text": "No env vars / secrets in this repo or exposed to previews."
+      },
+      {
+        "text": "Site reachable at the production URL."
+      }
+    ],
+    "tests": [],
+    "heldOut": [],
+    "after": [],
+    "issue": {
+      "number": 5,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/issues/5",
+      "body": "## Goal\n\nWire Vercel safely for a PUBLIC repo: production = main only, previews can't be weaponized by fork PRs, no secrets anywhere in the repo.\n\n## Checklist (dashboard work — human)\n\n- [ ] Vercel project connected to `chalkagents/chalk-protocol-site`, framework=Astro, production branch = `main` ONLY.\n- [ ] Fork safety: \"Require authorization for deployments from forked repositories\" enabled (member approval before a fork PR gets a preview); no env vars configured at all (the site needs none — if one ever appears, scope it to Production only, never Preview).\n- [ ] Deployment protection for previews if on Pro (password/SSO); otherwise accept public unguessable preview URLs — fine for a marketing site.\n- [ ] Domain: `protocol.chalkagents.com` CNAME → Vercel; `chalk-protocol-site.vercel.app` until DNS is ready.\n- [ ] After the domain is live: set `chalkagents/chalk-protocol`'s repo `homepage` field and add the link to its README (small PR in the parent repo).\n\n## Acceptance criteria\n\n- [ ] Production deploys only from pushes to main; PR previews require member approval for forks.\n- [ ] No env vars / secrets in this repo or exposed to previews.\n- [ ] Site reachable at the production URL.\n"
+    },
+    "branchType": "feat",
+    "labels": [
+      "enhancement"
+    ],
+    "pipeline": {
+      "stage": "selected",
+      "at": "2026-07-06T09:49:31.663Z"
+    },
+    "createdAt": "2026-07-06T09:49:31.663Z",
+    "reviews": [],
+    "blockedFrom": "specd",
+    "block": {
+      "needs": "human-input",
+      "reason": "Vercel dashboard toggles only the operator can flip: main-only production, fork-deployment authorization, zero env vars (see issue #5 comment — deploy is already live)",
+      "at": "2026-07-06T09:50:09.447Z"
+    },
+    "handoff": {
+      "path": ".chalk/handoffs/task-9c9377a-1.md",
+      "at": "2026-07-06T09:50:09.463Z",
+      "reason": "human-input",
+      "seq": 1
+    }
+  },
+  {
+    "id": "task-27ac9e89",
+    "title": "chore(security): branch-protect main — PR + required test check, squash-only, Dependabot",
+    "state": "done",
+    "acceptanceCriteria": [
+      {
+        "text": "Direct push to main is rejected; PRs without a green `test` check cannot merge."
+      },
+      {
+        "text": "`chalk pipeline` still lands an issue-backed task end-to-end under protection (squash via PR is unaffected)."
+      },
+      {
+        "text": "Dependabot security alerts enabled."
+      }
+    ],
+    "tests": [],
+    "heldOut": [],
+    "after": [],
+    "issue": {
+      "number": 4,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/issues/4",
+      "body": "## Goal\n\nMain is the only path to production, and nothing lands on it outside the gated loop. Mirrors the parent repo's posture.\n\n## Scope (GitHub settings — human/gh-api work, chalk task will block needs:human-input and that's fine)\n\n- Branch protection on `main`: PR required (0 approvals — the adversarial reviewer is the approval), required status check `test` (needs the CI issue landed first), enforce for admins, no force-push, no deletion.\n- Merge methods: squash only (matches `github.mergeMethod` in the spine).\n- Enable Dependabot security updates (lockfile alerts for `astro`).\n\n## Acceptance criteria\n\n- [ ] Direct push to main is rejected; PRs without a green `test` check cannot merge.\n- [ ] `chalk pipeline` still lands an issue-backed task end-to-end under protection (squash via PR is unaffected).\n- [ ] Dependabot security alerts enabled.\n\nDepends on: the CI verify lane issue.\n"
+    },
+    "branchType": "feat",
+    "labels": [
+      "enhancement"
+    ],
+    "pipeline": {
+      "stage": "selected",
+      "at": "2026-07-06T09:49:31.664Z"
+    },
+    "createdAt": "2026-07-06T09:49:31.664Z",
+    "reviews": [],
+    "handoff": {
+      "path": ".chalk/handoffs/task-27ac9e8-1.md",
+      "at": "2026-07-06T09:50:09.397Z",
+      "reason": "upstream",
+      "seq": 1
+    },
+    "startedAt": "2026-07-06T11:43:38.574Z",
+    "doneAt": "2026-07-06T11:44:48.820Z"
+  },
+  {
+    "id": "task-8286522e",
+    "title": "ci: GitHub Actions verify lane — node --test on PRs + main (remote broke-check for the merge gate)",
+    "state": "done",
+    "acceptanceCriteria": [
+      {
+        "text": "CI runs on PRs and on pushes to main; green on the current main."
+      },
+      {
+        "text": "Workflow declares explicit read-only `permissions` and uses no secrets."
+      },
+      {
+        "text": "`chalk merge`'s broke-check reports source=remote-CI (not local fallback) on the next issue-backed PR."
+      }
+    ],
+    "tests": [],
+    "heldOut": [],
+    "after": [],
+    "issue": {
+      "number": 3,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/issues/3",
+      "body": "## Goal\n\nA GitHub Actions verify lane so the protocol's merge gate gets a real remote broke-check (today it falls back to local verify), and so branch protection has a required check to enforce.\n\n## Scope\n\n- `.github/workflows/test.yml`: on `pull_request` and `push` to `main` — checkout, setup-node (LTS), `npm ci`, `node --test` (the locked test installs nothing extra and runs the real Astro build).\n- **Least privilege, fork-safe**: top-level `permissions: contents: read`; plain `pull_request` trigger only — never `pull_request_target`; no secrets referenced anywhere in the workflow.\n- Name the job `test` so it can be the required status check.\n\n## Acceptance criteria\n\n- [ ] CI runs on PRs and on pushes to main; green on the current main.\n- [ ] Workflow declares explicit read-only `permissions` and uses no secrets.\n- [ ] `chalk merge`'s broke-check reports source=remote-CI (not local fallback) on the next issue-backed PR.\n"
+    },
+    "branchType": "ci",
+    "labels": [
+      "ci"
+    ],
+    "pipeline": {
+      "stage": "cleaned",
+      "at": "2026-07-06T09:53:16.164Z"
+    },
+    "createdAt": "2026-07-06T09:49:31.664Z",
+    "reviews": [
+      {
+        "at": "2026-07-06T09:53:03.670Z",
+        "by": "adversary",
+        "verdict": "pass",
+        "findings": [
+          {
+            "severity": "med",
+            "area": "correctness",
+            "note": "Criteria 1 ('green on the current main') and 3 (broke-check reports source=remote-CI) are only observable after this PR merges and the workflow actually runs; nothing in-repo can prove them. The workflow content is the correct minimal enabler: `npm test` -> `node --test` exercises both test files (build.test.mjs self-installs/builds and CI runs `npm ci` first with a lockfile present, Node 22 satisfies Astro 5), so a red run on main is unlikely, but confirm the first Actions run and the next `chalk merge` broke-check output before considering criterion 3 discharged."
+          },
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "test/ci-workflow.test.mjs asserts the workflow's triggers, read-only permissions, absence of secrets, and npm ci/test steps, and every assertion fails if the workflow is reverted — the change is genuinely covered. However the regexes are format-brittle: a future multi-line `branches:\\n  - main` list would fail the push-trigger test, and `doesNotMatch(/:\\s*write\\b/)` can false-positive on unrelated YAML values (e.g., a step named 'mode: write'). Acceptable now, may cause spurious failures on benign refactors."
+          },
+          {
+            "severity": "low",
+            "area": "correctness",
+            "note": "The permissions test only requires a top-level `permissions: contents: read`; a job-level `permissions:` block adding scopes would still satisfy the first two assertions (the `:write` guard would catch write grants but not added non-read scopes like `contents: read` + `issues: read`). Current workflow has no job-level block, so criterion 2 is met as shipped."
+          },
+          {
+            "severity": "low",
+            "area": "regression",
+            "note": "Adding .github/workflows/ci.yml and a new test file touches no existing source or tests; `npm test` gains one fast file-content test. No plausible regression to existing behavior."
+          }
+        ]
+      }
+    ],
+    "branch": "ci/3-ci-github-actions-verify-lane",
+    "plan": "# Plan — GitHub Actions verify lane\n\n**Approach:** Add a single minimal workflow `.github/workflows/ci.yml` that runs `npm ci` + `npm test` (`node --test`, which itself installs/builds via `test/build.test.mjs`) on PRs and pushes to `main`, plus a locked-style node test asserting the workflow's shape. Alternative (separate build + test jobs) rejected — one job mirrors `chalk verify` exactly and keeps the diff small. No YAML parser dep is allowed (`build.test.mjs` locks deps to `astro` only), so the new test asserts via string/regex on the raw YAML.\n\n**Steps:**\n1. Create `.github/workflows/ci.yml`:\n   - `name: CI`; `on: { pull_request: {}, push: { branches: [main] } }`\n   - Top-level `permissions: { contents: read }` — nothing else; no `secrets.*` references anywhere.\n   - One job `test` on `ubuntu-latest`: `actions/checkout@v4`, `actions/setup-node@v4` (node `22`, `cache: npm`), `npm ci`, `npm test`.\n2. Add `test/ci-workflow.test.mjs` (node:test) reading the YAML as text and asserting: file exists; triggers include `pull_request` and `push` to `main`; declares `permissions:` with `contents: read` and no `write`; contains no `secrets.` reference; runs `npm test`.\n3. Run `chalk verify` — `node --test` picks up both test files; loop to GREEN.\n4. Criterion 3 (broke-check `source=remote-CI`) is satisfied automatically once this workflow exists on the repo — no code needed; note it in `chalk decision`/`chalk update`.\n\n**Files:**\n- `.github/workflows/ci.yml` (new)\n- `test/ci-workflow.test.mjs` (new; mirror path/style of existing `test/build.test.mjs`)\n\n**Test:** `test/ci-workflow.test.mjs` — fails today (workflow file absent), passes once `ci.yml` exists with PR+main triggers, read-only `permissions`, and no secrets.",
+    "startedAt": "2026-07-06T09:51:05.260Z",
+    "attempts": 1,
+    "pr": {
+      "number": 8,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/pull/8",
+      "recorded": true,
+      "lgtm": true
+    },
+    "doneAt": "2026-07-06T09:53:16.163Z"
+  }
+]
