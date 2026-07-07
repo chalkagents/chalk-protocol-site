@@ -1282,7 +1282,7 @@
   {
     "id": "task-f446d151",
     "title": "design: reimagine composition — centered editorial hero, terminal as a full-width band, centered section rhythm",
-    "state": "specd",
+    "state": "done",
     "acceptanceCriteria": [
       {
         "text": "Hero content is centered (single column), with the terminal relocated to a full-width band below it."
@@ -1310,10 +1310,42 @@
       "enhancement"
     ],
     "pipeline": {
-      "stage": "selected",
-      "at": "2026-07-07T10:46:46.937Z"
+      "stage": "cleaned",
+      "at": "2026-07-07T10:54:04.065Z"
     },
     "createdAt": "2026-07-07T10:46:46.938Z",
-    "reviews": []
+    "reviews": [
+      {
+        "at": "2026-07-07T10:53:34.253Z",
+        "by": "adversary",
+        "verdict": "pass",
+        "findings": [
+          {
+            "severity": "low",
+            "area": "design-intent",
+            "note": "The 'full-width band' is a full-width <section> but the terminal inside is capped at max-width:52rem centered — it's a centered band, not truly edge-to-edge. Matches the criterion's intent (relocated below, own band) but 'full-width' is aspirational; no test pins band width, though this is cosmetic not behavioral."
+          },
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "The new #36 test asserts .hero text-align:center, the hero-demo band containing the terminal, and .section-head centering — all revert-sensitive (old two-column grid/inline headers would fail). Criterion 2's 'clear vertical rhythm' (section-head margin) is not directly asserted, but the centering and structural relocation are covered."
+          },
+          {
+            "severity": "low",
+            "area": "correctness",
+            "note": "Locked strings retained: the trust-note copy ('Bring your own executor...') was moved verbatim to .demo-note (line 124), all reframe/lever/compare strings and design tokens intact, no new dependencies. Existing terminal/session tests (lines 138-156) still pass since 'terminal hero-session' and gate lines are preserved."
+          }
+        ]
+      }
+    ],
+    "branch": "feat/36-design-reimagine-composition-centered-editorial",
+    "startedAt": "2026-07-07T10:46:56.692Z",
+    "pr": {
+      "number": 37,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/pull/37",
+      "recorded": true,
+      "lgtm": true
+    },
+    "doneAt": "2026-07-07T10:54:04.064Z"
   }
 ]
