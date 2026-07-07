@@ -343,6 +343,29 @@ describe('site chrome — shared layout, docs chrome, social meta', () => {
       for (const id of ['protocol', 'quickstart', 'research']) {
         assert.ok(html.includes(`href="/${id}"`), `expected the nav to link /${id} on /${page.name}`);
       }
+      // Columns are pinned explicitly (nav=1, article=2, TOC=3) so placement can never
+      // depend on `order` — the bug (#30) that stranded the article in the wrong column.
+      // Tie each column value to ITS selector: a scramble (article at col 1, nav at col 2)
+      // must fail, which a "grid-column:N appears somewhere" check would not catch.
+      const css = html.replace(/\s+/g, '');
+      for (const [sel, col] of [['.doc-sidebar', 1], ['.doc-main', 2], ['.doc-toc', 3]]) {
+        const re = new RegExp(`\\${sel}[^{}]*\\{[^{}]*grid-column:${col}`);
+        assert.ok(
+          re.test(css),
+          `expected ${sel} pinned to grid-column ${col} on /${page.name} (guards the #30 wrong-column regression)`,
+        );
+      }
+      // Mobile (single column): the article must stack FIRST — reverting .doc-main's
+      // negative order would silently push it below the rails, so assert it positively.
+      assert.ok(
+        /\.doc-main[^{}]*\{[^{}]*order:-1/.test(css),
+        `expected .doc-main order:-1 so the article stacks first on mobile on /${page.name}`,
+      );
+      // The article is the WIDEST column: rails are fixed 12rem/13rem, center is flexible.
+      assert.ok(
+        /grid-template-columns:\s*12rem\s+minmax\(0,\s*42rem\)\s+13rem/.test(html),
+        `expected the article to be the widest center column on /${page.name}`,
+      );
     });
 
     test(`${page.name}: has a right-hand "On this page" TOC built from the headings`, () => {
