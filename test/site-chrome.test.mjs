@@ -198,6 +198,37 @@ describe('site chrome — shared layout, docs chrome, social meta', () => {
     assert.ok(html.includes('class="accent"'), 'expected an accent-highlighted word in the headline');
   });
 
+  test('design: fonts are self-hosted — no external font dependency', () => {
+    const html = read(pages[0]);
+    // The display typeface is declared via @font-face pointing at a LOCAL file, not a
+    // Google Fonts <link>. Reverting to the external stylesheet fails here.
+    assert.match(
+      html,
+      /@font-face\s*\{[^}]*Funnel Display[^}]*\/fonts\/funnel-display\.woff2/,
+      'expected Funnel Display declared via a self-hosted @font-face',
+    );
+    assert.ok(
+      !/fonts\.(googleapis|gstatic)\.com/.test(html),
+      'expected no external Google Fonts host reference',
+    );
+    // The font files actually ship in the build (the @font-face src cannot 404).
+    for (const f of ['funnel-display.woff2', 'space-grotesk.woff2', 'jetbrains-mono.woff2']) {
+      assert.ok(
+        existsSync(path.join(sandbox, 'dist', 'fonts', f)),
+        `expected /fonts/${f} to ship in dist`,
+      );
+    }
+  });
+
+  test('design: the old phosphor/scanline identity is gone (revert-sensitive)', () => {
+    const html = read(pages[0]);
+    assert.ok(!html.includes('--phosphor'), 'expected the phosphor token removed');
+    assert.ok(
+      !/(body|html)[^{}]*::?(before|after)\s*\{[^}]*repeating-linear-gradient/.test(html),
+      'expected no page-global scanline overlay',
+    );
+  });
+
   test('design: sections carry wide-tracked mono eyebrow labels', () => {
     const html = read(pages[0]);
     assert.ok(html.includes('class="eyebrow"'), 'expected mono eyebrow labels above section headings');
