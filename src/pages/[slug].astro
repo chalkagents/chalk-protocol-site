@@ -37,10 +37,11 @@ const toc = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
     </aside>
 
     <main class="doc-main">
-      <nav class="doc-meta">
-        <a href="/">&larr; Chalk Protocol</a>
-        <a class="doc-source" href={source}>Source: {entry.data.file}</a>
-      </nav>
+      <div class="doc-toolbar">
+        <a class="doc-back" href="/"><span aria-hidden="true">&larr;</span> Chalk Protocol</a>
+        <a class="doc-source" href={source}>View source <span aria-hidden="true">&#8599;</span></a>
+      </div>
+      <p class="eyebrow doc-eyebrow">Documentation · {entry.data.file}</p>
       <article>
         <Content />
       </article>
@@ -128,18 +129,18 @@ const toc = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
   /* Three-column docs layout: left nav / constrained prose / right TOC.
      Rails collapse away below 64rem; prose stays readable at every width. */
   .doc-layout {
-    max-width: 84rem;
+    max-width: 86rem;
     margin: 0 auto;
-    padding: 2.5rem 1.5rem 3.5rem;
+    padding: 3.5rem 1.5rem 4.5rem;
     display: grid;
     grid-template-columns: 1fr;
     gap: 2.5rem;
   }
   @media (min-width: 64rem) {
     .doc-layout {
-      grid-template-columns: 12rem minmax(0, 42rem) 13rem;
+      grid-template-columns: 13rem minmax(0, 46rem) 14rem;
       justify-content: center;
-      gap: 3rem;
+      gap: 3.5rem;
       align-items: start;
     }
   }
@@ -237,36 +238,54 @@ const toc = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
     order: -1;
     min-width: 0;
   }
-  .doc-meta {
+  /* Editorial doc header: a slim toolbar, then an eyebrow, then the article H1 as a
+     display-font page title — the same eyebrow → headline rhythm as the landing. */
+  .doc-toolbar {
     display: flex;
     justify-content: space-between;
     gap: 0.75rem;
     flex-wrap: wrap;
-    margin-bottom: 2rem;
+    padding-bottom: 1.4rem;
+    margin-bottom: 1.8rem;
+    border-bottom: 1px solid var(--border);
     font-family: var(--mono);
-    font-size: 0.85rem;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
   }
-  .doc-meta a {
+  .doc-back {
+    color: var(--fg2);
+    text-decoration: none;
+  }
+  .doc-back:hover {
+    color: var(--fg);
+  }
+  .doc-source {
     color: var(--accent);
     text-decoration: none;
   }
-  .doc-meta a:hover {
-    text-decoration: underline;
+  .doc-source:hover {
+    color: var(--accent-deep);
   }
-  .doc-meta .doc-source {
-    color: var(--fg2);
+  .doc-eyebrow {
+    margin: 0 0 0.9rem;
   }
 
   /* Rendered markdown — sans prose at a readable measure */
   article {
-    font-size: 1rem;
-    line-height: 1.75;
+    font-size: 1.02rem;
+    line-height: 1.78;
   }
   article :global(h1) {
-    font-size: 2.1rem;
-    line-height: 1.15;
-    letter-spacing: -0.025em;
-    margin: 0 0 1rem;
+    font-family: var(--display);
+    font-weight: 300;
+    font-size: clamp(2.2rem, 4vw, 3rem);
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+    margin: 0 0 2.2rem;
+    padding-bottom: 1.6rem;
+    border-bottom: 1px solid var(--border);
   }
   article :global(h2),
   article :global(h3),
