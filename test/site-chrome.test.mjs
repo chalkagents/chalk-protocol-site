@@ -166,12 +166,16 @@ describe('site chrome — shared layout, docs chrome, social meta', () => {
   // --- v2.1 "modern terminal" — the calm-surface contract. Each assertion would fail
   // if the refinement were reverted (typography re-aliased to mono, scanlines going
   // page-global again, or the eyebrow+heading hierarchy collapsing back to $-headings).
-  // --- Revyl-inspired design system (#33). Revert-sensitive to the new tokens/type.
-  test('design: near-black canvas + one lavender accent, real sans body', () => {
+  // --- Chalk identity (#40). Revert-sensitive to the chalkboard palette (NOT Revyl's).
+  test('design: chalkboard canvas + creamy chalk-white type + chalk-yellow accent', () => {
     const html = read(pages[0]);
-    assert.match(html, /--void:\s*#050505/, 'expected the near-black canvas token');
-    assert.match(html, /--accent:\s*#c4a1ff/i, 'expected the single lavender accent token');
-    assert.match(html, /--sans:\s*["']Space Grotesk["']/, 'expected a real sans body stack (Space Grotesk)');
+    assert.match(html, /--void:\s*#0d1512/, 'expected the chalkboard-slate canvas token (not Revyl black)');
+    assert.match(html, /--fg:\s*#efece0/i, 'expected the creamy chalk-white text token');
+    assert.match(html, /--accent:\s*#e9cf7d/i, 'expected the chalk-yellow accent token (not lavender)');
+    // The borrowed Revyl values must be gone.
+    assert.ok(!/#c4a1ff/i.test(html), 'expected the lavender accent removed');
+    assert.ok(!/--void:\s*#050505/.test(html), 'expected Revyl pure-black canvas removed');
+    assert.match(html, /--sans:\s*["']Space Grotesk["']/, 'expected a real sans body stack');
     assert.match(
       html,
       /body\s*\{[^}]*font-family:\s*var\(--sans\)/,
@@ -179,21 +183,24 @@ describe('site chrome — shared layout, docs chrome, social meta', () => {
     );
   });
 
-  test('design: a light-weight display headline with one glowing accent word', () => {
+  test('design: display headline with a hand-drawn chalk underline on the accent word', () => {
     const html = read(pages[0]);
     assert.match(html, /--display:\s*["']Funnel Display["']/, 'expected the Funnel Display display font');
-    // The hero headline uses the display font at a light weight, with an accent word that glows.
     assert.match(
       html,
       /\.headline[^{}]*\{[^}]*font-family:\s*var\(--display\)/,
       'expected the headline to use the display font',
     );
-    // Astro scopes selectors with a [data-astro-cid-…] attribute, so match .accent
-    // tolerant of the scoping attribute between the class and the rule block.
+    // The signature Chalk move: the accent word is UNDERLINED with a chalk stroke (an
+    // inline SVG), not glowing. Reverting to a text-shadow glow fails here.
     assert.match(
       html,
-      /\.accent[^{}]*\{[^}]*text-shadow:[^}]*var\(--accent-glow\)/,
-      'expected the accent word in the headline to glow (the defining Revyl move)',
+      /\.accent[^{}]*\{[^}]*background-image:\s*url\([^)]*svg/,
+      'expected the accent word to carry a chalk-underline SVG (the Chalk brand move)',
+    );
+    assert.ok(
+      !/\.accent[^{}]*\{[^}]*text-shadow/.test(html),
+      'expected NO glow on the accent word — the chalk underline replaces it',
     );
     assert.ok(html.includes('class="accent"'), 'expected an accent-highlighted word in the headline');
   });
