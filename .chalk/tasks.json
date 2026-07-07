@@ -839,7 +839,7 @@
   {
     "id": "task-058ccfa8",
     "title": "design: docs three-column upgrade — left nav + sticky TOC, code-copy buttons, callouts (hand-rolled, zero-dep)",
-    "state": "blocked",
+    "state": "done",
     "acceptanceCriteria": [
       {
         "text": "Docs pages render a three-column layout: left doc nav (active highlighted), constrained prose, right sticky TOC of the page's headings."
@@ -873,23 +873,71 @@
       "enhancement"
     ],
     "pipeline": {
-      "stage": "selected",
-      "at": "2026-07-07T08:39:34.588Z"
+      "stage": "cleaned",
+      "at": "2026-07-07T09:03:47.071Z"
     },
     "createdAt": "2026-07-07T08:39:34.589Z",
-    "reviews": [],
-    "blockedFrom": "specd",
-    "block": {
-      "needs": "upstream",
-      "reason": "sequenced after #22 landing reframe — shares Base.astro/footer + site-chrome test; land #22 first to avoid a churny rebase",
-      "at": "2026-07-07T08:39:34.914Z"
-    },
+    "reviews": [
+      {
+        "at": "2026-07-07T08:59:00.609Z",
+        "by": "adversary",
+        "verdict": "block",
+        "findings": [
+          {
+            "severity": "high",
+            "area": "test-adequacy",
+            "note": "Criterion 3 (GitHub-alert callouts render in the site) is not covered by any revert-sensitive integration test. callouts.test.mjs only exercises the transform against synthetic hast trees; the build fixture (site-chrome.test.mjs) contains no `> [!NOTE]` markdown. Removing `callouts` from astro.config.mjs's rehypePlugins array — i.e. reverting the actual site wiring that satisfies the criterion — leaves the entire suite green. The end-to-end 'renders as styled boxes in the source markdown' deliverable is effectively unasserted."
+          },
+          {
+            "severity": "med",
+            "area": "correctness",
+            "note": "No doc in the corpus uses GitHub-alert syntax and no rendered-page assertion exists, so it is unverified that the real remark→rehype pipeline yields a single first `<p>` text node beginning with `[!NOTE]` (soft-break/multi-child paragraph handling, marker split across nodes). The plugin's assumption is proven only on hand-built trees, not the actual Astro output, so criterion 3's real rendering path is untested."
+          },
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "The 'working copy button' (criterion 2) and the active-TOC IntersectionObserver behavior are only asserted structurally (presence of .code-block/.code-copy/.toc-link). The clipboard click handler and scroll-spy JS are never executed by any test, so 'working' is unproven; a broken handler would still pass."
+          }
+        ]
+      },
+      {
+        "at": "2026-07-07T09:03:18.530Z",
+        "by": "adversary",
+        "verdict": "pass",
+        "findings": [
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "The copy-button 'working' criterion (2) and the TOC scroll-spy active-state are only asserted by string presence of 'clipboard'/'IntersectionObserver' in the built HTML, not by executing the click handler or the IntersectionObserver logic. The rehype markup and JS presence are revert-sensitive, but the actual clipboard write and active-highlight branch (seen set / rootMargin) are never behaviorally exercised. Acceptable given headless-build constraints and simple handlers, but the runtime behavior is unverified."
+          },
+          {
+            "severity": "low",
+            "area": "correctness",
+            "note": "Callout marker stripping relies on remark emitting the alert marker and body as a single hast text node containing '[!NOTE]\\n...'. If a soft break ever produces a separate text/break node, the marker match would fail; the end-to-end fixture covers the common case only. Minor edge risk, currently green."
+          },
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "Criterion 4's 'source link retained' has no dedicated assertion in the added chrome tests (only prev/next and heading anchors are asserted); the doc-source markup is retained in code but not guarded by a revert-sensitive test."
+          }
+        ]
+      }
+    ],
     "handoff": {
       "path": ".chalk/handoffs/task-058ccfa-1.md",
       "at": "2026-07-07T08:39:34.938Z",
       "reason": "upstream",
       "seq": 1
-    }
+    },
+    "branch": "feat/23-design-docs-three-column-upgrade",
+    "startedAt": "2026-07-07T08:51:14.569Z",
+    "pr": {
+      "number": 26,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/pull/26",
+      "recorded": true,
+      "lgtm": true
+    },
+    "doneAt": "2026-07-07T09:03:47.071Z"
   },
   {
     "id": "task-ebe7ca92",
