@@ -2,7 +2,7 @@
   "id": "proto-834bdbdd8118",
   "name": "chalk-protocol-site — Chalk Protocol",
   "createdAt": 1783328557922,
-  "updatedAt": 1783421644064,
+  "updatedAt": 1783422783056,
   "order": 0,
   "cards": [
     {
@@ -287,6 +287,15 @@
         "prUrl": "https://github.com/chalkagents/chalk-protocol-site/pull/37",
         "evidenceUrl": "https://github.com/chalkagents/chalk-protocol-site/issues/36"
       }
+    },
+    {
+      "id": "task-72c30c21",
+      "title": "design: Chalk identity — chalkboard palette + creamy chalk-white type + chalk-yellow accent w/ hand-drawn underline (all pages)",
+      "column": "todo",
+      "createdAt": 1783422783056,
+      "updatedAt": 1783422783056,
+      "order": 16,
+      "description": "- Chalkboard palette applied site-wide: chalkboard-slate canvas, creamy chalk-white text, chalk-yellow accent (revert-sensitive token assertions updated from the Revyl values).\n- The hero accent word uses a chalk underline (not a glow); revert-sensitive test covers it.\n- Docs pages fully match the new identity (same tokens, readable creamy-white prose).\n- All locked tests pass; full suite green; zero new deps."
     }
   ]
 }

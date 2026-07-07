@@ -1347,5 +1347,42 @@
       "lgtm": true
     },
     "doneAt": "2026-07-07T10:54:04.064Z"
+  },
+  {
+    "id": "task-72c30c21",
+    "title": "design: Chalk identity — chalkboard palette + creamy chalk-white type + chalk-yellow accent w/ hand-drawn underline (all pages)",
+    "state": "specd",
+    "acceptanceCriteria": [
+      {
+        "text": "Chalkboard palette applied site-wide: chalkboard-slate canvas, creamy chalk-white text, chalk-yellow accent (revert-sensitive token assertions updated from the Revyl values)."
+      },
+      {
+        "text": "The hero accent word uses a chalk underline (not a glow); revert-sensitive test covers it."
+      },
+      {
+        "text": "Docs pages fully match the new identity (same tokens, readable creamy-white prose)."
+      },
+      {
+        "text": "All locked tests pass; full suite green; zero new deps."
+      }
+    ],
+    "tests": [],
+    "heldOut": [],
+    "after": [],
+    "issue": {
+      "number": 40,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/issues/40",
+      "body": "## Direction\n\nGive the site its OWN identity (maintainer: don't blindly copy Revyl's lavender). Lean into the CHALKBOARD metaphor — genuinely on-brand for \"Chalk Protocol\" — and apply it cohesively to EVERY page (landing + docs). Keep the good structure (centered editorial, HUD panels, self-hosted fonts, sharp corners); change the palette + the accent-word treatment to be ours.\n\n## Chalk identity (token VALUE changes — names kept, so landing + docs update together)\n\n- **Canvas** = chalkboard slate (subtle warm green-black), not Revyl's pure #050505: --void #0d1512 / --panel #121b16 / --panel-2 #17211b.\n- **Chalk-white type**: --fg #efece0 (creamy off-white — real chalk, not stark #fff); --fg2 #9aa39a (dusty sage); --fg3 #6b746b; --border rgba(239,236,224,.1) (chalk-dust hairlines).\n- **One accent = chalk-yellow** (classroom emphasis chalk): --accent #e9cf7d / --accent-deep #f0d98f. Terminal ok/err become chalk-green #8fd6a0 / chalk-coral #f0968a.\n- **Signature move**: the hero's accent word is marked with a HAND-DRAWN CHALK UNDERLINE (a rough stroke), replacing Revyl's text-shadow glow. This is the unique Chalk brand gesture.\n\n## Scope\n\n- Base.astro: new token values, chalk-underline utility.\n- Landing: accent word gets the chalk underline (was glowing); everything else inherits the new palette.\n- Docs: inherit the shared tokens; verify prose reads well in creamy chalk-white on chalkboard slate; polish any color that reads off.\n\n## Constraints\n\n- Keep centered composition (#36), self-hosted fonts (#33), locked strings, all test hooks, docs #30 column pins/copy/callouts/TOC.\n- No new deps; build stays offline; reduced-motion-safe.\n\n## Acceptance criteria\n\n- [ ] Chalkboard palette applied site-wide: chalkboard-slate canvas, creamy chalk-white text, chalk-yellow accent (revert-sensitive token assertions updated from the Revyl values).\n- [ ] The hero accent word uses a chalk underline (not a glow); revert-sensitive test covers it.\n- [ ] Docs pages fully match the new identity (same tokens, readable creamy-white prose).\n- [ ] All locked tests pass; full suite green; zero new deps.\n"
+    },
+    "branchType": "feat",
+    "labels": [
+      "enhancement"
+    ],
+    "pipeline": {
+      "stage": "selected",
+      "at": "2026-07-07T11:13:03.055Z"
+    },
+    "createdAt": "2026-07-07T11:13:03.056Z",
+    "reviews": []
   }
 ]
