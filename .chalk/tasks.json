@@ -1278,5 +1278,42 @@
       "lgtm": true
     },
     "doneAt": "2026-07-07T10:30:34.261Z"
+  },
+  {
+    "id": "task-f446d151",
+    "title": "design: reimagine composition — centered editorial hero, terminal as a full-width band, centered section rhythm",
+    "state": "specd",
+    "acceptanceCriteria": [
+      {
+        "text": "Hero content is centered (single column), with the terminal relocated to a full-width band below it."
+      },
+      {
+        "text": "Section headers are centered with clear vertical rhythm."
+      },
+      {
+        "text": "Locked strings + design tokens retained; all tests pass; zero new deps."
+      },
+      {
+        "text": "A revert-sensitive assertion covers the centered-hero composition."
+      }
+    ],
+    "tests": [],
+    "heldOut": [],
+    "after": [],
+    "issue": {
+      "number": 36,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/issues/36",
+      "body": "Reposition the landing toward Revyl's actual composition (maintainer pick: centered editorial). The current left-aligned two-column hero reads cramped/generic.\n\n## Changes\n- **Hero**: single centered column (~46rem), text-align center — eyebrow, huge centered display headline with the glowing accent word, centered enemy line + pitch, centered install + copy, centered CTAs, centered trust strip.\n- **Terminal**: moved OUT of the hero's right column into its own full-width band below the hero, centered (~50rem) with the lavender aura behind it — the 'product visual' beat.\n- **Sections**: centered header blocks (eyebrow + heading + sub centered, margin auto), generous vertical rhythm; the HUD-panel grids below stay full-width.\n- Keep the design system (#33 tokens, self-hosted fonts), all locked strings, and every test-asserted hook (hero-session, lever-grid, compare-grid, install copy, trust, grid-column pins on docs).\n\n## Acceptance criteria\n- [ ] Hero content is centered (single column), with the terminal relocated to a full-width band below it.\n- [ ] Section headers are centered with clear vertical rhythm.\n- [ ] Locked strings + design tokens retained; all tests pass; zero new deps.\n- [ ] A revert-sensitive assertion covers the centered-hero composition."
+    },
+    "branchType": "feat",
+    "labels": [
+      "enhancement"
+    ],
+    "pipeline": {
+      "stage": "selected",
+      "at": "2026-07-07T10:46:46.937Z"
+    },
+    "createdAt": "2026-07-07T10:46:46.938Z",
+    "reviews": []
   }
 ]
