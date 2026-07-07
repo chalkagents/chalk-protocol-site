@@ -835,5 +835,138 @@
       "lgtm": true
     },
     "doneAt": "2026-07-07T08:27:01.840Z"
+  },
+  {
+    "id": "task-058ccfa8",
+    "title": "design: docs three-column upgrade — left nav + sticky TOC, code-copy buttons, callouts (hand-rolled, zero-dep)",
+    "state": "blocked",
+    "acceptanceCriteria": [
+      {
+        "text": "Docs pages render a three-column layout: left doc nav (active highlighted), constrained prose, right sticky TOC of the page's headings."
+      },
+      {
+        "text": "Every code block has a working copy button (hand-rolled, no dep)."
+      },
+      {
+        "text": "GitHub-alert callouts in the source markdown render as styled note/tip/warning/caution boxes."
+      },
+      {
+        "text": "Prose column is width-constrained and readable; prev/next, source link, heading anchors retained."
+      },
+      {
+        "text": "All locked tests pass unmodified; new chrome covered by revert-sensitive assertions in test/site-chrome.test.mjs."
+      },
+      {
+        "text": "Zero new deps; full suite green."
+      }
+    ],
+    "tests": [],
+    "heldOut": [],
+    "after": [],
+    "issue": {
+      "number": 23,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/issues/23",
+      "body": "## Direction\n\nResearch-backed docs upgrade (comparables: Starlight, VitePress, Nextra, Bun, Prisma, Tailwind, tRPC). The 3 docs pages (/protocol, /quickstart, /research) render long single markdown documents with only a prev/next pager — no navigation, no TOC, no code-copy. Move to the universal three-column docs skeleton, hand-rolled (zero new deps — maintainer decision; Pagefind search deliberately skipped, low ROI on 3 pages).\n\n## Add / change (priority order)\n\n1. **Three-column layout**: persistent left nav (the 3 docs, current one highlighted) / constrained prose column (~70ch) / sticky right-hand \"On this page\" TOC built from the H2/H3 headings we already parse, with an IntersectionObserver active-section highlight. Collapse both rails responsibly on narrow screens.\n2. **Copy button on every code block** — hand-rolled: a tiny rehype pass (like src/lib/heading-anchors.mjs) wraps Shiki `<pre>` with a copy button + a small vanilla-JS handler. No dependency.\n3. **Callouts / admonitions** — render GitHub-alert syntax (`> [!NOTE] / [!TIP] / [!WARNING] / [!CAUTION]`) from the parent markdown as colored boxes, via a hand-rolled rehype function. Portable because it lives in the source markdown.\n4. **Constrain content width + readable typography** on the prose column (sans body from v2.1, ~70ch, comfortable line-height).\n5. Keep the existing prev/next pager, source link, heading anchors, and Shiki blocks.\n\n## Constraints\n\n- LOCKED (do not edit): test/docs-pages.test.mjs — docs still render the parent repo's current markdown at build time; that behavior and its assertions must hold.\n- No new runtime deps (dependencies stays exactly [astro]); TOC active-highlight + copy = tiny vanilla JS.\n- Keep v2.1 identity (sans prose, mono terminal chrome, scanlines only in .terminal, reduced-motion-safe) and existing site-chrome assertions.\n\n## Acceptance criteria\n\n- [ ] Docs pages render a three-column layout: left doc nav (active highlighted), constrained prose, right sticky TOC of the page's headings.\n- [ ] Every code block has a working copy button (hand-rolled, no dep).\n- [ ] GitHub-alert callouts in the source markdown render as styled note/tip/warning/caution boxes.\n- [ ] Prose column is width-constrained and readable; prev/next, source link, heading anchors retained.\n- [ ] All locked tests pass unmodified; new chrome covered by revert-sensitive assertions in test/site-chrome.test.mjs.\n- [ ] Zero new deps; full suite green.\n"
+    },
+    "branchType": "feat",
+    "labels": [
+      "enhancement"
+    ],
+    "pipeline": {
+      "stage": "selected",
+      "at": "2026-07-07T08:39:34.588Z"
+    },
+    "createdAt": "2026-07-07T08:39:34.589Z",
+    "reviews": [],
+    "blockedFrom": "specd",
+    "block": {
+      "needs": "upstream",
+      "reason": "sequenced after #22 landing reframe — shares Base.astro/footer + site-chrome test; land #22 first to avoid a churny rebase",
+      "at": "2026-07-07T08:39:34.914Z"
+    },
+    "handoff": {
+      "path": ".chalk/handoffs/task-058ccfa-1.md",
+      "at": "2026-07-07T08:39:34.938Z",
+      "reason": "upstream",
+      "seq": 1
+    }
+  },
+  {
+    "id": "task-ebe7ca92",
+    "title": "design: landing reframe — name the enemy, feature grid, before/after, honest trust strip, real footer",
+    "state": "done",
+    "acceptanceCriteria": [
+      {
+        "text": "Hero leads with a category headline + an enemy/problem line; the existing pitch + install + session are retained."
+      },
+      {
+        "text": "A feature grid names all four levers, each linking to a doc."
+      },
+      {
+        "text": "A before/after (without/with Chalk) section is present."
+      },
+      {
+        "text": "An honest \"works with any agent\" trust strip is present; no fabricated metrics."
+      },
+      {
+        "text": "A real footer with Docs + Community link columns."
+      },
+      {
+        "text": "All locked tests pass unmodified; new sections covered by new assertions in test/site-chrome.test.mjs (revert-sensitive, per the reviewer's standing bar)."
+      },
+      {
+        "text": "Zero new deps; full suite green."
+      }
+    ],
+    "tests": [],
+    "heldOut": [],
+    "after": [],
+    "issue": {
+      "number": 22,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/issues/22",
+      "body": "## Direction\n\nResearch-backed landing reframe (comparables: esbuild, biome, bun, atuin, opencode, turborepo, linear). Today the page states what Chalk *is* but never argues *why* or shows *any* trust signal. Keep the best existing assets — animated gate-refusal session, ASCII wordmark, v2.1 modern-terminal styling — and add the missing argument + proof. Zero new deps (maintainer decision); honest trust signals only (repo has 0 stars — NO fabricated numbers).\n\n## Add / change (priority order)\n\n1. **Category headline + \"name the enemy\" line** above the install. New h1-scale positioning line (e.g. \"The quality gate for AI coding agents\") and a one-liner naming the failure Chalk prevents (\"AI agents will tell you they're done. Chalk makes them prove it.\"). The existing pitch line stays as the sub-pitch.\n2. **Feature grid — the four levers.** A 4-card grid after the hero: Verify / Locked tests / Adversarial review / Merge gate, each = name + one-line tagline + link to the relevant doc. (biome/bun/zed pattern.)\n3. **Before/after comparison.** Two columns: \"Agent without Chalk\" (self-declares done, tests deleted, bug ships) vs \"Agent with Chalk\" (verify refuses, review blocks, task can't close). Makes the value legible without watching the animation.\n4. **Honest trust strip.** \"Works with any agent — Claude Code · Cursor · opencode · aider\" + \"built through chalk itself\" (already true/provable). No star counts.\n5. **Loop as a numbered walkthrough** (1..N) with the real commands (chalk next → context → start → verify → done), replacing/augmenting the bare gate list.\n6. **Real 2-column footer** (Docs / Community + social + license), replacing the status-bar-only footer. Keep it small — no funded-company four-column wall.\n\n## Constraints\n\n- LOCKED (do not edit): test/docs-pages.test.mjs. The locked landing strings MUST survive verbatim: \"Ship agent-written code through gates, not vibes\", \"a locked spec decides success, not the model\", the four gate names, the quickstart command steps, the four parent-doc links, \"npm install -g chalk-protocol\".\n- No new runtime deps (dependencies stays exactly [astro]); client JS stays limited (copy button; any new interaction must be tiny vanilla JS).\n- Keep v2.1 identity: sans prose, mono for terminal content, scanlines only inside .terminal, reduced-motion-safe.\n\n## Acceptance criteria\n\n- [ ] Hero leads with a category headline + an enemy/problem line; the existing pitch + install + session are retained.\n- [ ] A feature grid names all four levers, each linking to a doc.\n- [ ] A before/after (without/with Chalk) section is present.\n- [ ] An honest \"works with any agent\" trust strip is present; no fabricated metrics.\n- [ ] A real footer with Docs + Community link columns.\n- [ ] All locked tests pass unmodified; new sections covered by new assertions in test/site-chrome.test.mjs (revert-sensitive, per the reviewer's standing bar).\n- [ ] Zero new deps; full suite green.\n"
+    },
+    "branchType": "feat",
+    "labels": [
+      "enhancement"
+    ],
+    "pipeline": {
+      "stage": "cleaned",
+      "at": "2026-07-07T08:49:32.622Z"
+    },
+    "createdAt": "2026-07-07T08:39:34.592Z",
+    "reviews": [
+      {
+        "at": "2026-07-07T08:46:38.976Z",
+        "by": "adversary",
+        "verdict": "pass",
+        "findings": [
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "Criterion 4 requires 'no fabricated metrics' but no assertion negatively guards against a future fabricated stat being added; the current strip is honest (agent names only), so this is acceptable but the contract's negative clause is unguarded."
+          },
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "Criterion 1 also mandates the install command and hero session are retained; the new tests assert only the pitch line's retention. Both are present and untouched in the diff, so no regression, but their retention is not revert-sensitive."
+          },
+          {
+            "severity": "low",
+            "area": "correctness",
+            "note": "Feature-grid links point to /protocol (x3) and /quickstart — all valid built doc pages per the pages array; the 'each linking to a doc' criterion is met, though the test only asserts one lever-link class exists rather than one per card (all four are rendered via map, so covered)."
+          }
+        ]
+      }
+    ],
+    "branch": "feat/22-design-landing-reframe-name-the",
+    "startedAt": "2026-07-07T08:39:39.796Z",
+    "pr": {
+      "number": 24,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/pull/24",
+      "recorded": true,
+      "lgtm": true
+    },
+    "doneAt": "2026-07-07T08:49:32.621Z"
   }
 ]
