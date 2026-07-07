@@ -1061,5 +1061,123 @@
       "lgtm": true
     },
     "doneAt": "2026-07-07T08:49:32.621Z"
+  },
+  {
+    "id": "task-9a589c92",
+    "title": "fix: docs three-column layout is broken — TOC lands in the middle, article crammed into the right column",
+    "state": "done",
+    "acceptanceCriteria": [
+      {
+        "text": "At desktop (≥64rem) the layout renders left nav | article (center, widest) | TOC (right), each in its own explicit grid column."
+      },
+      {
+        "text": "On mobile the article stacks first, above the nav and TOC."
+      },
+      {
+        "text": "A revert-sensitive test asserts the built CSS pins the article to the center column (grid-column 2) and the rails to 1 and 3."
+      },
+      {
+        "text": "Full suite green; no new deps."
+      }
+    ],
+    "tests": [],
+    "heldOut": [],
+    "after": [],
+    "issue": {
+      "number": 30,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/issues/30",
+      "body": "On desktop the docs grid places the article in the wrong column: the right-hand 'On this page' TOC renders in the wide middle column and the article content is squished into the narrow right (13rem) column, with a large empty gap.\n\n## Cause\nThe desktop media query resets `order:0` on .doc-sidebar and .doc-toc but NOT on .doc-main (which keeps `order:1` from the mobile-first rule). Grid auto-placement then orders items sidebar(0) → toc(0) → main(1), landing them in columns 1/2/3 = nav | TOC | article instead of nav | article | TOC.\n\n## Fix\nPin the three rails to explicit grid columns at desktop (grid-column 1/2/3) so placement is order-independent; keep a single `order` override only for the mobile single-column (content-first) stack.\n\n## Acceptance criteria\n- [ ] At desktop (≥64rem) the layout renders left nav | article (center, widest) | TOC (right), each in its own explicit grid column.\n- [ ] On mobile the article stacks first, above the nav and TOC.\n- [ ] A revert-sensitive test asserts the built CSS pins the article to the center column (grid-column 2) and the rails to 1 and 3.\n- [ ] Full suite green; no new deps."
+    },
+    "branchType": "fix",
+    "labels": [
+      "bug"
+    ],
+    "pipeline": {
+      "stage": "cleaned",
+      "at": "2026-07-07T09:42:40.747Z"
+    },
+    "createdAt": "2026-07-07T09:32:52.399Z",
+    "reviews": [
+      {
+        "at": "2026-07-07T09:37:33.933Z",
+        "by": "adversary",
+        "verdict": "block",
+        "findings": [
+          {
+            "severity": "med",
+            "area": "test-adequacy",
+            "note": "Criterion 3 requires the revert-sensitive test to assert the article is pinned to grid-column 2 and the rails to 1 and 3. The added test only checks that the strings grid-column:1/2/3 each appear *somewhere* in the built CSS; it never ties a column value to its selector. A scramble that put the article at grid-column:1 and the nav at grid-column:2 — i.e. the exact TOC-in-the-middle / article-in-wrong-column bug class (#30) this task exists to prevent — would still satisfy all three assertions and pass. The test therefore does not actually verify the criterion it claims to guard."
+          },
+          {
+            "severity": "low",
+            "area": "regression",
+            "note": ".doc-sidebar now gains position:sticky; top:4.5rem at desktop (previously only .doc-toc was sticky). This is a new, untested behavior change bundled with the column fix; no assertion covers it, so a scrolling/overlap regression on the left nav would go undetected."
+          },
+          {
+            "severity": "low",
+            "area": "correctness",
+            "note": "At desktop .doc-main retains order:-1 from the base rule (not reset in the ≥64rem media query). Placement is correct because grid-column is explicit, but leaving a stray order on a grid item that is meant to be order-independent is fragile and undercuts the stated 'order can NEVER affect placement' intent; a future auto-placed sibling could be reordered unexpectedly."
+          }
+        ]
+      },
+      {
+        "at": "2026-07-07T09:39:59.160Z",
+        "by": "adversary",
+        "verdict": "block",
+        "findings": [
+          {
+            "severity": "high",
+            "area": "test-adequacy",
+            "note": "Criterion 2 (on mobile the article stacks first, above nav and TOC) has NO test asserting it. The added test only checks desktop grid-column pinning inside the ≥64rem media query. Mobile stacking now depends entirely on `.doc-main{order:-1}` while `.doc-sidebar`/`.doc-toc` lost their explicit order (default 0). If someone reverted `order:-1` to `order:1` (or 0), the whole suite would still pass, yet the article would render AFTER the rails on mobile — a vacuous pass for criterion 2."
+          },
+          {
+            "severity": "med",
+            "area": "correctness",
+            "note": "Mobile article-first ordering is fragile: it relies solely on the negative `order:-1` beating the now-default order:0 of the two rails. Any future value >=0 on .doc-main silently breaks mobile stacking with no guard, and there is no positive assertion (e.g. order value or DOM/source-order check) protecting it."
+          },
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "Criterion 1 says the article must be the WIDEST center column, but no test asserts the grid-template-columns proportions (12rem | minmax(0,42rem) | 13rem). The revert-sensitive test only pins column numbers, not that the center column is widest; a width regression would go uncaught."
+          }
+        ]
+      },
+      {
+        "at": "2026-07-07T09:42:15.235Z",
+        "by": "adversary",
+        "verdict": "pass",
+        "findings": [
+          {
+            "severity": "low",
+            "area": "correctness",
+            "note": "Criterion 2 (mobile: article stacks first) is satisfied: source order is sidebar→main→toc and .doc-main gets order:-1, so on the single-column mobile grid the article renders before nav and TOC. Correct."
+          },
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "All three added behaviors are asserted revert-sensitively: per-selector grid-column pinning (nav=1/article=2/TOC=3, tied to each selector so a scramble fails), .doc-main order:-1 for mobile-first stacking, and grid-template-columns with minmax(0,42rem) proving the center is widest. Reverting any of the CSS changes would fail these assertions. No vacuous pass."
+          },
+          {
+            "severity": "low",
+            "area": "design-intent",
+            "note": "Change directly addresses the #30 bug (TOC-in-the-middle from order-dependent auto-placement) by pinning explicit grid-column values at ≥64rem; order becomes a no-op at desktop, so the fix is order-independent as intended."
+          },
+          {
+            "severity": "low",
+            "area": "regression",
+            "note": "Base/mobile relative stacking of nav vs TOC preserved (both default order 0 in source order); sticky positioning still scoped to the desktop media query; diff limited to two files with no new dependencies."
+          }
+        ]
+      }
+    ],
+    "branch": "fix/30-fix-docs-three-column-layout",
+    "startedAt": "2026-07-07T09:35:51.735Z",
+    "pr": {
+      "number": 31,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/pull/31",
+      "recorded": true,
+      "lgtm": true
+    },
+    "doneAt": "2026-07-07T09:42:40.746Z"
   }
 ]
