@@ -148,7 +148,7 @@ const toc = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.15em;
-    color: var(--muted);
+    color: var(--fg2);
     margin: 0 0 0.8rem;
   }
 
@@ -160,25 +160,25 @@ const toc = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
     display: flex;
     flex-direction: column;
     gap: 0.15rem;
-    border-left: 1px solid var(--border-dim);
+    border-left: 1px solid var(--border);
   }
   .doc-nav-link {
     font-family: var(--mono);
     font-size: 0.9rem;
-    color: var(--muted);
+    color: var(--fg2);
     text-decoration: none;
     padding: 0.25rem 0.85rem;
     border-left: 2px solid transparent;
     margin-left: -1px;
   }
   .doc-nav-link:hover {
-    color: var(--ink);
+    color: var(--fg);
     text-decoration: none;
   }
   .doc-nav-link.active {
-    color: var(--phosphor);
-    text-shadow: var(--glow);
-    border-left-color: var(--phosphor);
+    color: var(--accent);
+    text-shadow: none;
+    border-left-color: var(--accent);
   }
 
   /* Right TOC */
@@ -189,12 +189,12 @@ const toc = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
     display: flex;
     flex-direction: column;
     gap: 0.15rem;
-    border-left: 1px solid var(--border-dim);
+    border-left: 1px solid var(--border);
   }
   .toc-link {
     font-size: 0.85rem;
     line-height: 1.4;
-    color: var(--muted);
+    color: var(--fg2);
     text-decoration: none;
     padding: 0.2rem 0.75rem;
     border-left: 2px solid transparent;
@@ -205,12 +205,12 @@ const toc = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
     font-size: 0.8rem;
   }
   .toc-link:hover {
-    color: var(--ink);
+    color: var(--fg);
     text-decoration: none;
   }
   .toc-link.active {
-    color: var(--phosphor);
-    border-left-color: var(--phosphor);
+    color: var(--accent);
+    border-left-color: var(--accent);
   }
   @media (min-width: 64rem) {
     /* Pin each rail to an explicit column so placement can NEVER depend on source
@@ -247,14 +247,14 @@ const toc = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
     font-size: 0.85rem;
   }
   .doc-meta a {
-    color: var(--amber);
+    color: var(--accent);
     text-decoration: none;
   }
   .doc-meta a:hover {
     text-decoration: underline;
   }
   .doc-meta .doc-source {
-    color: var(--muted);
+    color: var(--fg2);
   }
 
   /* Rendered markdown — sans prose at a readable measure */
@@ -277,7 +277,7 @@ const toc = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
   }
   article :global(h2) {
     font-size: 1.45rem;
-    border-bottom: 1px solid var(--border-dim);
+    border-bottom: 1px solid var(--border);
     padding-bottom: 0.4rem;
   }
   article :global(h3) {
@@ -285,21 +285,21 @@ const toc = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
   }
   article :global(p),
   article :global(li) {
-    color: var(--ink);
+    color: var(--fg);
   }
   article :global(a) {
-    color: var(--amber);
+    color: var(--accent);
   }
   article :global(code) {
     font-family: var(--mono);
     font-size: 0.9em;
   }
   article :global(:not(pre) > code) {
-    background: var(--bg-raised);
-    border: 1px solid var(--border-dim);
+    background: var(--panel-2);
+    border: 1px solid var(--border);
     border-radius: 0;
     padding: 0.1rem 0.35rem;
-    color: var(--phosphor);
+    color: var(--accent);
   }
 
   /* Code block + copy button (from src/lib/code-copy.mjs) */
@@ -319,9 +319,9 @@ const toc = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
     right: 0.5rem;
     font-family: var(--mono);
     font-size: 0.75rem;
-    color: var(--muted);
-    background: var(--bg-raised);
-    border: 1px solid var(--border-dim);
+    color: var(--fg2);
+    background: var(--panel-2);
+    border: 1px solid var(--border);
     padding: 0.15rem 0.55rem;
     cursor: pointer;
     opacity: 0;
@@ -333,17 +333,17 @@ const toc = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
   }
   article :global(.code-copy:hover) {
     color: #0a0700;
-    background: var(--amber);
-    border-color: var(--amber);
+    background: var(--accent);
+    border-color: var(--accent);
   }
 
   /* Callouts (from src/lib/callouts.mjs) */
   article :global(.callout) {
     margin: 1.2rem 0;
     padding: 0.8rem 1.1rem;
-    border: 1px solid var(--border-dim);
+    border: 1px solid var(--border);
     border-left-width: 3px;
-    background: var(--bg-raised);
+    background: var(--panel-2);
   }
   article :global(.callout-title) {
     margin: 0 0 0.3rem;
@@ -356,25 +356,25 @@ const toc = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
   article :global(.callout p:last-child) {
     margin-bottom: 0;
   }
-  article :global(.callout-note) { border-left-color: var(--amber); }
-  article :global(.callout-note .callout-title) { color: var(--amber); }
-  article :global(.callout-tip) { border-left-color: var(--phosphor); }
-  article :global(.callout-tip .callout-title) { color: var(--phosphor); }
-  article :global(.callout-important) { border-left-color: var(--phosphor); }
-  article :global(.callout-important .callout-title) { color: var(--phosphor); }
-  article :global(.callout-warning) { border-left-color: var(--amber); }
-  article :global(.callout-warning .callout-title) { color: var(--amber); }
-  article :global(.callout-caution) { border-left-color: var(--red); }
-  article :global(.callout-caution .callout-title) { color: var(--red); }
+  article :global(.callout-note) { border-left-color: var(--accent); }
+  article :global(.callout-note .callout-title) { color: var(--accent); }
+  article :global(.callout-tip) { border-left-color: var(--accent); }
+  article :global(.callout-tip .callout-title) { color: var(--accent); }
+  article :global(.callout-important) { border-left-color: var(--accent); }
+  article :global(.callout-important .callout-title) { color: var(--accent); }
+  article :global(.callout-warning) { border-left-color: var(--accent); }
+  article :global(.callout-warning .callout-title) { color: var(--accent); }
+  article :global(.callout-caution) { border-left-color: var(--err); }
+  article :global(.callout-caution .callout-title) { color: var(--err); }
 
   /* Plain (non-alert) blockquotes keep the prior styling */
   article :global(blockquote) {
     margin: 1rem 0;
     padding: 0.1rem 1rem;
-    border-left: 3px solid var(--phosphor);
-    background: var(--bg-raised);
+    border-left: 3px solid var(--accent);
+    background: var(--panel-2);
     border-radius: 0;
-    color: var(--muted);
+    color: var(--fg2);
   }
   article :global(table) {
     border-collapse: collapse;
@@ -389,7 +389,7 @@ const toc = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
     text-align: left;
   }
   article :global(th) {
-    background: var(--bg-raised);
+    background: var(--panel-2);
   }
   article :global(hr) {
     border: 0;
@@ -403,7 +403,7 @@ const toc = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
   /* Heading anchors injected by src/lib/heading-anchors.mjs */
   article :global(.heading-anchor) {
     margin-left: 0.45rem;
-    color: var(--muted);
+    color: var(--fg2);
     font-family: var(--mono);
     font-weight: 400;
     text-decoration: none;
@@ -419,7 +419,7 @@ const toc = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
     opacity: 1;
   }
   article :global(.heading-anchor:hover) {
-    color: var(--chalk);
+    color: var(--accent);
   }
 
   /* Prev / next pager */
@@ -428,7 +428,7 @@ const toc = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
     justify-content: space-between;
     gap: 1rem;
     margin-top: 3rem;
-    border-top: 1px solid var(--border-dim);
+    border-top: 1px solid var(--border);
     padding-top: 1.5rem;
   }
   .pager-link {
@@ -439,17 +439,17 @@ const toc = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
     border: 1px solid var(--border);
     border-radius: 0;
     padding: 0.7rem 1rem;
-    background: var(--bg-inset);
+    background: var(--panel);
     min-width: 10rem;
   }
   .pager-link:hover {
-    border-color: var(--phosphor);
+    border-color: var(--accent);
     box-shadow: 0 0 18px rgba(61, 255, 112, 0.12);
     text-decoration: none;
   }
   .pager-link:hover .pager-title {
-    color: var(--phosphor);
-    text-shadow: var(--glow);
+    color: var(--accent);
+    text-shadow: none;
   }
   .pager-link.next {
     text-align: right;
@@ -458,10 +458,10 @@ const toc = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
   .pager-label {
     font-family: var(--mono);
     font-size: 0.8rem;
-    color: var(--muted);
+    color: var(--fg2);
   }
   .pager-title {
-    color: var(--amber);
+    color: var(--accent);
     font-weight: 600;
   }
 </style>
