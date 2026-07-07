@@ -1384,5 +1384,42 @@
     },
     "createdAt": "2026-07-07T11:13:03.056Z",
     "reviews": []
+  },
+  {
+    "id": "task-03ceaa2c",
+    "title": "design: restructure docs pages — editorial doc header, rebalanced columns + rhythm, styled pager (match the landing)",
+    "state": "specd",
+    "acceptanceCriteria": [
+      {
+        "text": "Docs pages open with a header zone: eyebrow + a display-font page title (H1 styled large) + source link — matching the landing's editorial feel."
+      },
+      {
+        "text": "Three-column layout retained with rebalanced proportions and clear vertical rhythm; left nav + right TOC refined; column pins (#30) intact."
+      },
+      {
+        "text": "Prev/next pager styled as panels."
+      },
+      {
+        "text": "All locked tests pass; full suite green; zero new deps; a revert-sensitive test covers the new doc-header."
+      }
+    ],
+    "tests": [],
+    "heldOut": [],
+    "after": [],
+    "issue": {
+      "number": 43,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/issues/43",
+      "body": "## Direction\n\nThe landing is dialed in; the docs pages (/protocol, /quickstart, /research — shared [slug].astro) need to match its editorial composition. Today they jump abruptly from a thin meta bar into raw markdown, with plain column proportions. Restructure + reposition to feel like the landing.\n\n## Changes\n\n- **Doc header zone** (top of the content column): a mono eyebrow (e.g. \"Documentation · PROTOCOL.md\") above the doc title, matching the landing's eyebrow pattern; the article's H1 restyled as a Funnel-Display headline (large, creamy chalk-white) — a real page hero, not a generic markdown heading. Source-on-GitHub link positioned cleanly in the header.\n- **Better column proportions & rhythm**: rebalance the 3-col grid (comfortable ~46rem prose measure, refined rails), add top padding/vertical rhythm consistent with the landing sections. Left nav gets the \"Docs\" rail label + chalk-yellow active state; right TOC \"On this page\" refined + sticky.\n- **Pager as HUD cards**: style prev/next to match the site's panels (hairline border, hover).\n- Keep the chalk identity (#40), three-column layout + #30 column pins, copy buttons, callouts, TOC, self-hosted fonts.\n\n## Constraints\n\n- LOCKED: test/docs-pages.test.mjs unchanged (docs still render parent markdown; the H1 still renders as `<h1>…</h1>`; callouts/code blocks intact).\n- No new deps; build stays offline; reduced-motion-safe; keep all site-chrome hooks (doc-layout, grid-column pins, doc-nav-link active, doc-toc, code-block/copy, callouts).\n\n## Acceptance criteria\n\n- [ ] Docs pages open with a header zone: eyebrow + a display-font page title (H1 styled large) + source link — matching the landing's editorial feel.\n- [ ] Three-column layout retained with rebalanced proportions and clear vertical rhythm; left nav + right TOC refined; column pins (#30) intact.\n- [ ] Prev/next pager styled as panels.\n- [ ] All locked tests pass; full suite green; zero new deps; a revert-sensitive test covers the new doc-header.\n"
+    },
+    "branchType": "feat",
+    "labels": [
+      "enhancement"
+    ],
+    "pipeline": {
+      "stage": "selected",
+      "at": "2026-07-07T11:56:35.444Z"
+    },
+    "createdAt": "2026-07-07T11:56:35.445Z",
+    "reviews": []
   }
 ]
