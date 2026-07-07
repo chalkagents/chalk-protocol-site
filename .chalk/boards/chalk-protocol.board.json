@@ -2,7 +2,7 @@
   "id": "proto-834bdbdd8118",
   "name": "chalk-protocol-site — Chalk Protocol",
   "createdAt": 1783328557922,
-  "updatedAt": 1783420234261,
+  "updatedAt": 1783421206938,
   "order": 0,
   "cards": [
     {
@@ -268,6 +268,15 @@
         "prUrl": "https://github.com/chalkagents/chalk-protocol-site/pull/34",
         "evidenceUrl": "https://github.com/chalkagents/chalk-protocol-site/issues/33"
       }
+    },
+    {
+      "id": "task-f446d151",
+      "title": "design: reimagine composition — centered editorial hero, terminal as a full-width band, centered section rhythm",
+      "column": "todo",
+      "createdAt": 1783421206938,
+      "updatedAt": 1783421206938,
+      "order": 15,
+      "description": "- Hero content is centered (single column), with the terminal relocated to a full-width band below it.\n- Section headers are centered with clear vertical rhythm.\n- Locked strings + design tokens retained; all tests pass; zero new deps.\n- A revert-sensitive assertion covers the centered-hero composition."
     }
   ]
 }
