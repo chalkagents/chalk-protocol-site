@@ -29,6 +29,12 @@ const fixtureMarkdown = [
   'chalk verify',
   '```',
   '',
+  '> [!NOTE]',
+  '> Fixture note body for the callout assertion.',
+  '',
+  '> [!WARNING]',
+  '> Fixture warning body.',
+  '',
 ].join('\n');
 
 const server = http.createServer((req, res) => {
@@ -359,6 +365,30 @@ describe('site chrome — shared layout, docs chrome, social meta', () => {
         /class="code-block">[\s\S]*?class="code-copy"[\s\S]*?astro-code/.test(html),
         `expected the copy button to sit alongside the Shiki block on /${page.name}`,
       );
+    });
+
+    // End-to-end callout proof: exercises the REAL remark→rehype pipeline (not a
+    // synthetic tree) AND is revert-sensitive — removing `callouts` from the
+    // astro.config rehypePlugins turns these plain blockquotes and fails here.
+    test(`${page.name}: GitHub-alert markdown renders as styled callouts`, () => {
+      const html = read(page);
+      assert.ok(html.includes('callout callout-note'), `expected a rendered [!NOTE] callout on /${page.name}`);
+      assert.ok(html.includes('callout callout-warning'), `expected a rendered [!WARNING] callout on /${page.name}`);
+      assert.ok(html.includes('class="callout-title">Note<'), `expected the Note title row on /${page.name}`);
+      // The marker text must be stripped, and the body preserved.
+      assert.ok(!html.includes('[!NOTE]'), `expected the [!NOTE] marker stripped from output on /${page.name}`);
+      assert.ok(
+        html.includes('Fixture note body for the callout assertion.'),
+        `expected the callout body preserved on /${page.name}`,
+      );
+    });
+
+    test(`${page.name}: the docs interactions are wired (copy + scroll-spy JS present)`, () => {
+      const html = read(page);
+      // Not a DOM execution, but a removed/renamed handler fails here — stronger than
+      // asserting only the markup the handler targets.
+      assert.ok(html.includes('clipboard'), `expected the copy handler on /${page.name}`);
+      assert.ok(html.includes('IntersectionObserver'), `expected the TOC scroll-spy on /${page.name}`);
     });
   }
 
