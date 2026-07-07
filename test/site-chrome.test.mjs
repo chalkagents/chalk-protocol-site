@@ -398,6 +398,20 @@ describe('site chrome — shared layout, docs chrome, social meta', () => {
         `expected no phosphor-green remnant on ${page.name}`,
       );
     });
+
+    // #43: docs restructure — editorial header matching the landing.
+    test(`${page.name}: has the editorial doc header (toolbar + eyebrow + display H1)`, () => {
+      const html = read(page);
+      assert.ok(html.includes('class="doc-toolbar"'), `expected the doc toolbar on ${page.name}`);
+      assert.ok(html.includes('View source'), `expected a View source link on ${page.name}`);
+      assert.ok(html.includes('doc-eyebrow'), `expected the doc eyebrow on ${page.name}`);
+      // The page title (article H1) is rendered as a display-font headline, not plain.
+      assert.match(
+        html,
+        /article[^{]*\bh1[^{}]*\{[^}]*font-family:\s*var\(--display\)/,
+        `expected the doc H1 to use the display font on ${page.name}`,
+      );
+    });
   }
 
   for (const page of pages.filter((p) => p.isDoc)) {
@@ -450,10 +464,11 @@ describe('site chrome — shared layout, docs chrome, social meta', () => {
         /\.doc-main[^{}]*\{[^{}]*order:-1/.test(css),
         `expected .doc-main order:-1 so the article stacks first on mobile on /${page.name}`,
       );
-      // The article is the WIDEST column: rails are fixed 12rem/13rem, center is flexible.
+      // The article is the WIDEST column: two narrow fixed rem rails flanking a wide
+      // flexible minmax center. Tolerant of exact widths, strict on the structure.
       assert.ok(
-        /grid-template-columns:\s*12rem\s+minmax\(0,\s*42rem\)\s+13rem/.test(html),
-        `expected the article to be the widest center column on /${page.name}`,
+        /grid-template-columns:\s*1[0-9]rem\s+minmax\(0,\s*4[0-9]rem\)\s+1[0-9]rem/.test(html),
+        `expected the article to be the widest center column between two narrow rails on /${page.name}`,
       );
     });
 
