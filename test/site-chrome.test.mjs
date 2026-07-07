@@ -322,6 +322,44 @@ describe('site chrome — shared layout, docs chrome, social meta', () => {
       const html = read(page);
       assert.ok(html.includes('astro-code'), `expected a Shiki .astro-code block on /${page.name}`);
     });
+
+    // --- docs three-column upgrade (#23): revert-sensitive per the reviewer's bar.
+    test(`${page.name}: renders the three-column docs layout with a left nav`, () => {
+      const html = read(page);
+      assert.ok(html.includes('class="doc-layout"'), `expected the three-column layout on /${page.name}`);
+      assert.ok(html.includes('doc-nav-link'), `expected the left doc nav on /${page.name}`);
+      // The current doc is the active nav entry.
+      assert.ok(
+        /doc-nav-link[^"]*active/.test(html) && html.includes('aria-current="page"'),
+        `expected the current doc marked active on /${page.name}`,
+      );
+      // All three docs are reachable from the nav.
+      for (const id of ['protocol', 'quickstart', 'research']) {
+        assert.ok(html.includes(`href="/${id}"`), `expected the nav to link /${id} on /${page.name}`);
+      }
+    });
+
+    test(`${page.name}: has a right-hand "On this page" TOC built from the headings`, () => {
+      const html = read(page);
+      assert.ok(html.includes('class="doc-toc"'), `expected the TOC rail on /${page.name}`);
+      assert.ok(html.includes('On this page'), `expected the TOC label on /${page.name}`);
+      // The fixture's H2 must appear as a TOC link pointing at its heading id.
+      assert.ok(
+        html.includes('data-toc-target="fixture-section-anchor-target"'),
+        `expected a TOC entry for the fixture section on /${page.name}`,
+      );
+    });
+
+    test(`${page.name}: every code block has a copy button`, () => {
+      const html = read(page);
+      assert.ok(html.includes('class="code-block"'), `expected code blocks wrapped for copy on /${page.name}`);
+      assert.ok(html.includes('class="code-copy"'), `expected a copy button on /${page.name}`);
+      // The wrapper contains the Shiki block (copy reads the sibling <pre> at click time).
+      assert.ok(
+        /class="code-block">[\s\S]*?class="code-copy"[\s\S]*?astro-code/.test(html),
+        `expected the copy button to sit alongside the Shiki block on /${page.name}`,
+      );
+    });
   }
 
   test('quickstart: prev/next pager links to protocol and research', () => {
