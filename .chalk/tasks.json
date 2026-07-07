@@ -1179,5 +1179,104 @@
       "lgtm": true
     },
     "doneAt": "2026-07-07T09:42:40.746Z"
+  },
+  {
+    "id": "task-cf3c4f9f",
+    "title": "design: Revyl-inspired redesign — near-black + one lavender accent, light display headlines, HUD panels",
+    "state": "done",
+    "acceptanceCriteria": [
+      {
+        "text": "New near-black + single-lavender-accent design system applied site-wide (tokens in Base.astro); scanlines/phosphor-on-everything removed."
+      },
+      {
+        "text": "Landing hero: huge light-weight uppercase display headline with one glowing accent word; locked pitch retained; gate-refusal terminal kept as a masked hero visual."
+      },
+      {
+        "text": "Sections restyled as HUD panels (feature grid, before/after, trust strip) with mono wide-tracked eyebrows."
+      },
+      {
+        "text": "Docs three-column layout restyled to the new system; column pins (#30), copy buttons, callouts, TOC all retained."
+      },
+      {
+        "text": "All locked tests pass unchanged; new design covered by revert-sensitive assertions; zero new deps; full suite green."
+      }
+    ],
+    "tests": [],
+    "heldOut": [],
+    "after": [],
+    "issue": {
+      "number": 33,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/issues/33",
+      "body": "## Direction\n\nFull redesign inspired by revyl.com (maintainer decision: drop the terminal/phosphor identity, adopt Revyl's \"cool, minimal, aesthetic\"). Research extracted Revyl's real design system: near-black canvas with ONE soft accent, mono-heavy wide-tracked labels, huge light-weight uppercase display headlines with a single glowing accent word, sharp corners, hairline borders + lavender glows (not drop-shadows), visuals masked into the black.\n\n## Design system (new)\n\n- **Palette:** `--void:#050505` (bg), `--panel:#0a0a0a`, `--panel-2:#111113`, `--fg:#fff`, `--fg2:#aaaaaa`, `--fg3:#333`, `--border:rgba(255,255,255,.1)`, `--accent:#C4A1FF` (soft lavender, the ONE accent), `--accent-deep:#b07fff`, `--accent-glow:rgba(196,161,255,.14)`. Keep `#4ade80`/`#f87171` for the terminal demo's ok/err lines only.\n- **Type:** display = Funnel Display (Google Fonts), used UPPERCASE, light weight (~340), line-height ~.95, one accent word with `text-shadow:0 0 26px var(--accent-glow)`. Labels/eyebrows/code = JetBrains Mono, tiny UPPERCASE, letter-spacing .15–.2em. Body = a clean readable sans (Space Grotesk / system) for docs prose.\n- **Shape/surface:** sharp (0–2px radius), 1px `rgba(255,255,255,.1)` borders, glow shadows + inset `0 1px #ffffff14` top highlight (no soft drop-shadows). Remove scanlines/vignette-over-text and phosphor-on-everything.\n- **CTAs:** primary = filled accent, near-black text, uppercase, rectangular, hover `#b07fff`. Secondary = transparent + hairline border + small square dot + arrow that nudges 3px on hover.\n- Fonts via `<link>` to Google Fonts (NOT a package dep; build stays offline — links aren't fetched at build).\n\n## Scope (all pages)\n\n- **Base.astro:** new tokens, fonts, minimal mono nav (wide-tracked, hairline border, blur), restyled footer columns as HUD panels.\n- **Landing:** huge light uppercase hero headline with one glowing accent word (keep the locked pitch as sub-copy); the gate-refusal terminal becomes the hero product-visual, masked to black at the edges with a faint lavender aura; feature grid → HUD panels; before/after + trust strip + loop restyled; mono eyebrows.\n- **Docs:** three-column layout kept (explicit grid-column pins stay — #30), restyled to the new palette/type; sans body, mono labels, accent links/active, sharp hairline surfaces; copy buttons + callouts + TOC retained.\n\n## Constraints\n\n- LOCKED: test/docs-pages.test.mjs unchanged (docs still render parent markdown + callouts + code blocks).\n- Locked landing strings survive verbatim: \"Ship agent-written code through gates, not vibes\", \"a locked spec decides success, not the model\", the four gate names, quickstart steps, the four parent-doc links, \"npm install -g chalk-protocol\".\n- No new runtime deps (dependencies stays exactly [astro]); build stays offline-deterministic (#14); reduced-motion-safe.\n- site-chrome.test.mjs (not locked) may be updated to match the new design, but coverage must not drop; keep the #30 grid-column pins, the callout end-to-end assertions, the copy-button/TOC guards.\n\n## Acceptance criteria\n\n- [ ] New near-black + single-lavender-accent design system applied site-wide (tokens in Base.astro); scanlines/phosphor-on-everything removed.\n- [ ] Landing hero: huge light-weight uppercase display headline with one glowing accent word; locked pitch retained; gate-refusal terminal kept as a masked hero visual.\n- [ ] Sections restyled as HUD panels (feature grid, before/after, trust strip) with mono wide-tracked eyebrows.\n- [ ] Docs three-column layout restyled to the new system; column pins (#30), copy buttons, callouts, TOC all retained.\n- [ ] All locked tests pass unchanged; new design covered by revert-sensitive assertions; zero new deps; full suite green.\n"
+    },
+    "branchType": "feat",
+    "labels": [
+      "enhancement"
+    ],
+    "pipeline": {
+      "stage": "cleaned",
+      "at": "2026-07-07T10:30:34.262Z"
+    },
+    "createdAt": "2026-07-07T10:10:36.233Z",
+    "reviews": [
+      {
+        "at": "2026-07-07T10:24:45.528Z",
+        "by": "adversary",
+        "verdict": "block",
+        "findings": [
+          {
+            "severity": "med",
+            "area": "test-adequacy",
+            "note": "Criterion 2 ('light display headlines') is not truly verified. The design tests assert only the CSS tokens (--display:'Funnel Display', --sans:'Space Grotesk') and that .headline uses var(--display). But actual rendering depends on the newly-added Google Fonts <link> in Base.astro, and NO test asserts that link's presence. Reverting the <link> leaves every 'design' test green while headlines silently fall back to system-ui — the display-typeface behavior ships untested."
+          },
+          {
+            "severity": "med",
+            "area": "design-intent",
+            "note": "The change introduces a third-party runtime dependency (fonts.googleapis.com/fonts.gstatic.com stylesheet + preconnects) on a site previously built from only system font stacks and meant to be self-contained ('built through chalk itself', served at protocol.chalkagents.com). This is in tension with the 'zero new deps' criterion's intent and adds an external/privacy/offline coupling that no criterion asked for and no test guards."
+          },
+          {
+            "severity": "low",
+            "area": "correctness",
+            "note": "Criterion 1 states 'scanlines/phosphor-on-everything removed' — the .terminal::after scanline layer and phosphor tokens are indeed gone, but no revert-sensitive assertion guards their ABSENCE. A reintroduction of page-global scanlines/phosphor tokens would not fail any test, so this criterion is only satisfied by inspection, not enforced."
+          },
+          {
+            "severity": "low",
+            "area": "regression",
+            "note": "The locked test file test/site-chrome.test.mjs was itself modified (58 lines) as part of this change. The current assertions read as strong/revert-sensitive, but the diff of removed assertions is not shown; a reviewer cannot confirm prior coverage (e.g. old 'modern terminal' calm-surface contract) was migrated rather than silently dropped. Provide the amend-spec justification/before-after to confirm no coverage was weakened."
+          }
+        ]
+      },
+      {
+        "at": "2026-07-07T10:30:07.153Z",
+        "by": "adversary",
+        "verdict": "pass",
+        "findings": [
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "Some minor cosmetic changes carry no dedicated assertion (nav 'github →' animated arrow span, brand mark changed from '▍chalk-protocol' to 'chalk/protocol', header/footer spacing). These are not acceptance criteria and reverting them wouldn't be caught, but the core design-system criteria (tokens, headline glow, self-hosted fonts, eyebrows, HUD panels, phosphor/scanline removal) are all covered by revert-sensitive tests."
+          },
+          {
+            "severity": "low",
+            "area": "design-intent",
+            "note": "Criterion 4 says callouts are 'retained' — they are, but note/tip/important/warning all collapse to the single lavender accent (only caution keeps a distinct --err color), reducing callout-type differentiation. Acceptable under a single-accent design system and callouts remain functional/styled."
+          },
+          {
+            "severity": "low",
+            "area": "correctness",
+            "note": "Criteria 1-5 verified against working tree: --void/#050505 + --accent/#c4a1ff tokens in Base.astro, phosphor token and page-global scanline removed, light-weight (font-weight:300) uppercase display headline with glowing .accent word, locked pitch line retained, gate-refusal terminal kept as masked hero visual, mono 0.2em-tracked eyebrows on HUD-panel sections, three-column docs with #30 column pins/copy/callouts/TOC intact, fonts self-hosted (no googleapis/gstatic), no package.json change so zero new deps. Tests are revert-sensitive."
+          }
+        ]
+      }
+    ],
+    "branch": "feat/33-design-revyl-inspired-redesign-near",
+    "startedAt": "2026-07-07T10:10:42.467Z",
+    "pr": {
+      "number": 34,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/pull/34",
+      "recorded": true,
+      "lgtm": true
+    },
+    "doneAt": "2026-07-07T10:30:34.261Z"
   }
 ]
