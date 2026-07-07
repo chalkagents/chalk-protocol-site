@@ -345,11 +345,14 @@ describe('site chrome — shared layout, docs chrome, social meta', () => {
       }
       // Columns are pinned explicitly (nav=1, article=2, TOC=3) so placement can never
       // depend on `order` — the bug (#30) that stranded the article in the wrong column.
-      // Assert all three explicit grid-column assignments are present in the built CSS.
-      for (const col of ['grid-column:1', 'grid-column:2', 'grid-column:3']) {
+      // Tie each column value to ITS selector: a scramble (article at col 1, nav at col 2)
+      // must fail, which a "grid-column:N appears somewhere" check would not catch.
+      const css = html.replace(/\s+/g, '');
+      for (const [sel, col] of [['.doc-sidebar', 1], ['.doc-main', 2], ['.doc-toc', 3]]) {
+        const re = new RegExp(`\\${sel}[^{}]*\\{[^{}]*grid-column:${col}`);
         assert.ok(
-          html.replace(/\s+/g, '').includes(col),
-          `expected an explicit ${col} pin on /${page.name} (guards the TOC-in-the-middle regression)`,
+          re.test(css),
+          `expected ${sel} pinned to grid-column ${col} on /${page.name} (guards the #30 wrong-column regression)`,
         );
       }
     });

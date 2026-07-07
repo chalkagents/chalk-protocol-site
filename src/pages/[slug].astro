@@ -222,6 +222,7 @@ const toc = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
     }
     .doc-main {
       grid-column: 2;
+      order: 0; /* reset the mobile content-first order so placement is truly order-independent */
     }
     .doc-toc {
       grid-column: 3;
