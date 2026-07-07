@@ -1,6 +1,7 @@
 import { defineCollection, z } from 'astro:content';
 import type { Loader } from 'astro/loaders';
 import { DOCS } from './lib/docs.mjs';
+import { fetchDoc } from './lib/fetch-doc.mjs';
 
 const docsLoader: Loader = {
   name: 'chalk-protocol-docs',
@@ -11,14 +12,8 @@ const docsLoader: Loader = {
     store.clear();
     for (const doc of DOCS) {
       const url = `${base}/${doc.file}`;
-      const res = await fetch(url);
-      if (!res.ok) {
-        throw new Error(`Failed to fetch ${url}: HTTP ${res.status} ${res.statusText}`);
-      }
-      const markdown = await res.text();
-      if (!markdown.trim()) {
-        throw new Error(`Fetched ${url} but the document is empty`);
-      }
+      // Retries transient failures (network / timeout / 5xx); fails hard on 404 or empty.
+      const markdown = await fetchDoc(url);
       store.set({
         id: doc.id,
         data: { title: doc.title, file: doc.file },
