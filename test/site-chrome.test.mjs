@@ -378,11 +378,24 @@ describe('site chrome — shared layout, docs chrome, social meta', () => {
   for (const page of pages.filter((p) => p.isDoc)) {
     test(`${page.name}: docs surfaces stay sharp (no large/rounded radii)`, () => {
       const html = read(page);
-      // The Revyl-inspired system is sharp (0–4px). Guard against a regression to
-      // bubbly cards: no rem-based radii and nothing ≥ 8px.
+      // The system is sharp (0–4px). Guard against a regression to bubbly cards:
+      // no rem-based radii and nothing ≥ 8px.
       assert.ok(
         !/border-radius:\s*[^;{}]*(?:rem|[89]px|\d\dpx)/.test(html),
         `expected docs surfaces to stay sharp on ${page.name} — no large/rounded radii`,
+      );
+    });
+
+    // #40: the chalk identity must reach the DOCS pages, not just the landing.
+    test(`${page.name}: docs render the chalk identity (no Revyl/phosphor remnants)`, () => {
+      const html = read(page);
+      assert.match(html, /--void:\s*#0d1512/, `expected the chalkboard canvas on ${page.name}`);
+      assert.match(html, /--accent:\s*#e9cf7d/i, `expected the chalk-yellow accent on ${page.name}`);
+      assert.ok(!/#c4a1ff/i.test(html), `expected no lavender remnant on ${page.name}`);
+      // 61,255,112 is the old phosphor lime-green that lingered in the docs pager.
+      assert.ok(
+        !/61,\s*255,\s*112/.test(html),
+        `expected no phosphor-green remnant on ${page.name}`,
       );
     });
   }
