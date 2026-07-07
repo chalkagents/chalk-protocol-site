@@ -104,23 +104,24 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   }
   :root {
     color-scheme: dark;
-    /* Revyl-inspired: near-black canvas, ONE soft lavender accent, hairline borders,
-       glows (never drop-shadows). Restraint is the whole trick. */
-    --void: #050505;
-    --panel: #0a0a0a;
-    --panel-2: #111113;
-    --fg: #ffffff;
-    --fg2: #aaaaaa;
-    --fg3: #6b7180;
-    --faint: #333333;
-    --border: rgba(255, 255, 255, 0.1);
-    --border-strong: rgba(255, 255, 255, 0.18);
-    --accent: #c4a1ff;
-    --accent-deep: #b07fff;
-    --accent-glow: rgba(196, 161, 255, 0.14);
-    --accent-tint: rgba(196, 161, 255, 0.08);
-    --ok: #4ade80;
-    --err: #f87171;
+    /* Chalk identity: a chalkboard-slate canvas, creamy chalk-white type, ONE soft
+       chalk-yellow accent (emphasis chalk), chalk-dust hairlines. The name made real —
+       not a borrowed palette. */
+    --void: #0d1512;
+    --panel: #121b16;
+    --panel-2: #17211b;
+    --fg: #efece0;
+    --fg2: #9aa39a;
+    --fg3: #6b746b;
+    --faint: #3a423c;
+    --border: rgba(239, 236, 224, 0.1);
+    --border-strong: rgba(239, 236, 224, 0.2);
+    --accent: #e9cf7d;
+    --accent-deep: #f0d98f;
+    --accent-glow: rgba(233, 207, 125, 0.18);
+    --accent-tint: rgba(233, 207, 125, 0.08);
+    --ok: #8fd6a0;
+    --err: #f0968a;
     --display: 'Funnel Display', 'Space Grotesk', system-ui, sans-serif;
     --sans: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
     --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
@@ -143,7 +144,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   }
   ::selection {
     background: var(--accent);
-    color: #14101f;
+    color: #141a12;
   }
   a {
     color: var(--accent);
@@ -180,7 +181,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     position: sticky;
     top: 0;
     z-index: 20;
-    background: rgba(5, 5, 5, 0.72);
+    background: rgba(13, 21, 18, 0.75);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
   }

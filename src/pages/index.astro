@@ -304,9 +304,17 @@ const cursorDelay = +t.toFixed(2);
     max-width: 16ch;
     text-wrap: balance;
   }
+  /* Signature Chalk move: the accent word is underlined with a rough, hand-drawn chalk
+     stroke (an inline SVG squiggle) — not a glow. This is our brand gesture. */
   .headline .accent {
     color: var(--accent);
-    text-shadow: 0 0 26px var(--accent-glow);
+    position: relative;
+    white-space: nowrap;
+    padding-bottom: 0.12em;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='12' viewBox='0 0 120 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8 C 20 3, 40 10, 60 6 S 100 3, 118 7' fill='none' stroke='%23e9cf7d' stroke-width='2.4' stroke-linecap='round' opacity='0.9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    background-size: 100% 0.42em;
   }
   .enemy {
     font-size: clamp(1.1rem, 2vw, 1.3rem);
@@ -381,14 +389,14 @@ const cursorDelay = +t.toFixed(2);
   }
   .button.primary {
     background: var(--accent);
-    color: #14101f;
+    color: #141a12;
     font-weight: 600;
     border: 1px solid var(--accent);
   }
   .button.primary:hover {
     background: var(--accent-deep);
     border-color: var(--accent-deep);
-    color: #14101f;
+    color: #141a12;
   }
   .button.ghost {
     background: transparent;
@@ -481,7 +489,7 @@ const cursorDelay = +t.toFixed(2);
     border: 1px solid var(--border);
     border-radius: 4px;
     overflow: hidden;
-    box-shadow: inset 0 1px rgba(255, 255, 255, 0.06), 0 0 40px rgba(196, 161, 255, 0.08);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.06), 0 0 40px rgba(233, 207, 125, 0.07);
   }
   .terminal-bar {
     display: flex;
