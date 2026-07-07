@@ -135,9 +135,10 @@ describe('site chrome — shared layout, docs chrome, social meta', () => {
     );
   });
 
-  test('landing: the loop section uses the terminal motif', () => {
+  test('landing: the hero shows the gate-refusal terminal as a framed visual', () => {
     const html = read(pages[0]);
-    assert.ok(html.includes('class="terminal"'), 'expected a terminal window in the loop section');
+    // The terminal now lives in the hero as the product visual (with a framed title bar).
+    assert.ok(html.includes('terminal hero-session'), 'expected the framed terminal in the hero');
     assert.ok(html.includes('class="terminal-bar"'), 'expected the terminal title bar');
   });
 
@@ -165,42 +166,83 @@ describe('site chrome — shared layout, docs chrome, social meta', () => {
   // --- v2.1 "modern terminal" — the calm-surface contract. Each assertion would fail
   // if the refinement were reverted (typography re-aliased to mono, scanlines going
   // page-global again, or the eyebrow+heading hierarchy collapsing back to $-headings).
-  test('v2.1: prose is a real sans stack and the body uses it', () => {
+  // --- Revyl-inspired design system (#33). Revert-sensitive to the new tokens/type.
+  test('design: near-black canvas + one lavender accent, real sans body', () => {
     const html = read(pages[0]);
-    assert.match(
-      html,
-      /--sans:\s*ui-sans-serif/,
-      'expected --sans to define a real sans stack, not alias the mono stack',
-    );
+    assert.match(html, /--void:\s*#050505/, 'expected the near-black canvas token');
+    assert.match(html, /--accent:\s*#c4a1ff/i, 'expected the single lavender accent token');
+    assert.match(html, /--sans:\s*["']Space Grotesk["']/, 'expected a real sans body stack (Space Grotesk)');
     assert.match(
       html,
       /body\s*\{[^}]*font-family:\s*var\(--sans\)/,
-      'expected the body to read in sans — mono is reserved for terminal content',
+      'expected the body to read in the sans stack',
     );
   });
 
-  test('v2.1: scanlines are scoped to terminal frames, never page-global', () => {
+  test('design: a light-weight display headline with one glowing accent word', () => {
     const html = read(pages[0]);
+    assert.match(html, /--display:\s*["']Funnel Display["']/, 'expected the Funnel Display display font');
+    // The hero headline uses the display font at a light weight, with an accent word that glows.
     assert.match(
       html,
-      /\.terminal(\[[^\]]*\])?::?after\s*\{[^}]*repeating-linear-gradient/,
-      'expected the CRT scanline texture inside .terminal::after',
+      /\.headline[^{}]*\{[^}]*font-family:\s*var\(--display\)/,
+      'expected the headline to use the display font',
+    );
+    // Astro scopes selectors with a [data-astro-cid-…] attribute, so match .accent
+    // tolerant of the scoping attribute between the class and the rule block.
+    assert.match(
+      html,
+      /\.accent[^{}]*\{[^}]*text-shadow:[^}]*var\(--accent-glow\)/,
+      'expected the accent word in the headline to glow (the defining Revyl move)',
+    );
+    assert.ok(html.includes('class="accent"'), 'expected an accent-highlighted word in the headline');
+  });
+
+  test('design: fonts are self-hosted — no external font dependency', () => {
+    const html = read(pages[0]);
+    // The display typeface is declared via @font-face pointing at a LOCAL file, not a
+    // Google Fonts <link>. Reverting to the external stylesheet fails here.
+    assert.match(
+      html,
+      /@font-face\s*\{[^}]*Funnel Display[^}]*\/fonts\/funnel-display\.woff2/,
+      'expected Funnel Display declared via a self-hosted @font-face',
     );
     assert.ok(
-      !/body(\[[^\]]*\])?::?(before|after)\s*\{[^}]*repeating-linear-gradient/.test(html),
-      'expected NO page-global scanline overlay on body — texture must not sit over reading text',
+      !/fonts\.(googleapis|gstatic)\.com/.test(html),
+      'expected no external Google Fonts host reference',
+    );
+    // The font files actually ship in the build (the @font-face src cannot 404).
+    for (const f of ['funnel-display.woff2', 'space-grotesk.woff2', 'jetbrains-mono.woff2']) {
+      assert.ok(
+        existsSync(path.join(sandbox, 'dist', 'fonts', f)),
+        `expected /fonts/${f} to ship in dist`,
+      );
+    }
+  });
+
+  test('design: the old phosphor/scanline identity is gone (revert-sensitive)', () => {
+    const html = read(pages[0]);
+    assert.ok(!html.includes('--phosphor'), 'expected the phosphor token removed');
+    assert.ok(
+      !/(body|html)[^{}]*::?(before|after)\s*\{[^}]*repeating-linear-gradient/.test(html),
+      'expected no page-global scanline overlay',
     );
   });
 
-  test('v2.1: sections use the eyebrow + sans-heading pattern', () => {
+  test('design: sections carry wide-tracked mono eyebrow labels', () => {
     const html = read(pages[0]);
     assert.ok(html.includes('class="eyebrow"'), 'expected mono eyebrow labels above section headings');
-    for (const eyebrow of ['$ chalk gates', '$ cat quickstart', '$ ls docs/']) {
+    for (const eyebrow of ['The four levers', 'The loop', 'Quickstart']) {
       assert.ok(html.includes(eyebrow), `expected the "${eyebrow}" eyebrow`);
     }
+    assert.match(
+      html,
+      /\.eyebrow\s*\{[^}]*letter-spacing:\s*0?\.2em/,
+      'expected eyebrows to use wide letter-spacing (the HUD-label move)',
+    );
     assert.ok(
       html.includes('The loop — four gates every change must clear'),
-      'expected the loop section to carry a readable sans heading, not a command-styled one',
+      'expected the loop section heading retained',
     );
   });
 
@@ -208,8 +250,9 @@ describe('site chrome — shared layout, docs chrome, social meta', () => {
   // section is reverted, per the reviewer's revert-sensitivity bar.
   test('reframe: hero leads with a category headline and an enemy line', () => {
     const html = read(pages[0]);
+    // Headline text with the accent word wrapped in a span — strip tags before matching.
     assert.ok(
-      html.includes('The quality gate for AI coding agents'),
+      html.replace(/<[^>]+>/g, '').includes('The quality gate for AI coding agents'),
       'expected the category headline',
     );
     assert.ok(
@@ -302,11 +345,13 @@ describe('site chrome — shared layout, docs chrome, social meta', () => {
   });
 
   for (const page of pages.filter((p) => p.isDoc)) {
-    test(`${page.name}: docs chrome follows the brutalist no-radius rule`, () => {
+    test(`${page.name}: docs surfaces stay sharp (no large/rounded radii)`, () => {
       const html = read(page);
+      // The Revyl-inspired system is sharp (0–4px). Guard against a regression to
+      // bubbly cards: no rem-based radii and nothing ≥ 8px.
       assert.ok(
-        !/border-radius:(?!0[;}])[^;}]*[1-9]/.test(html),
-        `expected no non-zero border-radius on ${page.name} — everything is a readout`,
+        !/border-radius:\s*[^;{}]*(?:rem|[89]px|\d\dpx)/.test(html),
+        `expected docs surfaces to stay sharp on ${page.name} — no large/rounded radii`,
       );
     });
   }
