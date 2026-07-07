@@ -355,6 +355,17 @@ describe('site chrome — shared layout, docs chrome, social meta', () => {
           `expected ${sel} pinned to grid-column ${col} on /${page.name} (guards the #30 wrong-column regression)`,
         );
       }
+      // Mobile (single column): the article must stack FIRST — reverting .doc-main's
+      // negative order would silently push it below the rails, so assert it positively.
+      assert.ok(
+        /\.doc-main[^{}]*\{[^{}]*order:-1/.test(css),
+        `expected .doc-main order:-1 so the article stacks first on mobile on /${page.name}`,
+      );
+      // The article is the WIDEST column: rails are fixed 12rem/13rem, center is flexible.
+      assert.ok(
+        /grid-template-columns:\s*12rem\s+minmax\(0,\s*42rem\)\s+13rem/.test(html),
+        `expected the article to be the widest center column on /${page.name}`,
+      );
     });
 
     test(`${page.name}: has a right-hand "On this page" TOC built from the headings`, () => {
