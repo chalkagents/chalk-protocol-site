@@ -154,7 +154,7 @@ const toc = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
 
   /* Left doc nav */
   .doc-sidebar {
-    order: 2;
+    min-width: 0;
   }
   .doc-nav {
     display: flex;
@@ -183,7 +183,7 @@ const toc = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
 
   /* Right TOC */
   .doc-toc {
-    order: 3;
+    min-width: 0;
   }
   .toc-nav {
     display: flex;
@@ -213,17 +213,27 @@ const toc = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
     border-left-color: var(--phosphor);
   }
   @media (min-width: 64rem) {
-    .doc-sidebar,
-    .doc-toc {
+    /* Pin each rail to an explicit column so placement can NEVER depend on source
+       order or the `order` property — this is the fix for the TOC-in-the-middle bug. */
+    .doc-sidebar {
+      grid-column: 1;
       position: sticky;
       top: 4.5rem;
-      order: 0;
+    }
+    .doc-main {
+      grid-column: 2;
+    }
+    .doc-toc {
+      grid-column: 3;
+      position: sticky;
+      top: 4.5rem;
     }
   }
 
-  /* Center column */
+  /* Center column — order:-1 stacks it first on mobile; at desktop it is pinned to
+     grid-column 2 (media query above), so order is a no-op there. */
   .doc-main {
-    order: 1;
+    order: -1;
     min-width: 0;
   }
   .doc-meta {

@@ -343,6 +343,15 @@ describe('site chrome — shared layout, docs chrome, social meta', () => {
       for (const id of ['protocol', 'quickstart', 'research']) {
         assert.ok(html.includes(`href="/${id}"`), `expected the nav to link /${id} on /${page.name}`);
       }
+      // Columns are pinned explicitly (nav=1, article=2, TOC=3) so placement can never
+      // depend on `order` — the bug (#30) that stranded the article in the wrong column.
+      // Assert all three explicit grid-column assignments are present in the built CSS.
+      for (const col of ['grid-column:1', 'grid-column:2', 'grid-column:3']) {
+        assert.ok(
+          html.replace(/\s+/g, '').includes(col),
+          `expected an explicit ${col} pin on /${page.name} (guards the TOC-in-the-middle regression)`,
+        );
+      }
     });
 
     test(`${page.name}: has a right-hand "On this page" TOC built from the headings`, () => {
