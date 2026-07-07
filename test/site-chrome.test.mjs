@@ -198,6 +198,60 @@ describe('site chrome — shared layout, docs chrome, social meta', () => {
     );
   });
 
+  // --- landing reframe (#22): argument + proof sections. Each assertion fails if the
+  // section is reverted, per the reviewer's revert-sensitivity bar.
+  test('reframe: hero leads with a category headline and an enemy line', () => {
+    const html = read(pages[0]);
+    assert.ok(
+      html.includes('The quality gate for AI coding agents'),
+      'expected the category headline',
+    );
+    assert.ok(
+      html.includes('Chalk makes them prove it'),
+      'expected the problem/enemy framing line',
+    );
+    // The proven pitch line is demoted, not deleted — the locked contract survives.
+    assert.ok(
+      html.includes('Ship agent-written code through gates, not vibes'),
+      'expected the original pitch retained as sub-copy',
+    );
+  });
+
+  test('reframe: a feature grid names all four levers with links', () => {
+    const html = read(pages[0]);
+    assert.ok(html.includes('class="lever-grid"'), 'expected the lever feature grid');
+    for (const lever of ['Locked test', 'Verify', 'Adversarial review', 'Merge gate']) {
+      assert.ok(html.includes(lever), `expected the "${lever}" lever card`);
+    }
+    assert.ok(html.includes('class="lever-link"'), 'expected each lever to link to a doc');
+  });
+
+  test('reframe: a before/after comparison is present', () => {
+    const html = read(pages[0]);
+    assert.ok(html.includes('class="compare-grid"'), 'expected the without/with comparison');
+    assert.ok(html.includes('Agent without Chalk'), 'expected the "without" column');
+    assert.ok(html.includes('Agent with Chalk'), 'expected the "with" column');
+  });
+
+  test('reframe: an honest trust strip lists the agents Chalk drives (no fabricated metrics)', () => {
+    const html = read(pages[0]);
+    assert.ok(html.includes('Works with any agent'), 'expected the trust strip label');
+    for (const agent of ['Claude Code', 'Cursor', 'opencode', 'aider']) {
+      assert.ok(html.includes(agent), `expected "${agent}" in the trust strip`);
+    }
+  });
+
+  for (const page of pages) {
+    test(`${page.name}: footer has Docs + Community link columns`, () => {
+      const html = read(page);
+      const footer = html.match(/<footer[^>]*>([\s\S]*?)<\/footer>/);
+      assert.ok(footer, `expected a footer on ${page.name}`);
+      assert.ok(footer[1].includes('footer-cols'), `expected footer link columns on ${page.name}`);
+      assert.ok(footer[1].includes('>Docs<'), `expected a Docs column on ${page.name}`);
+      assert.ok(footer[1].includes('>Community<'), `expected a Community column on ${page.name}`);
+    });
+  }
+
   test('landing: the typed session animation only exists inside the no-preference guard', () => {
     const html = read(pages[0]);
     // The CSS minifier strips whitespace (`@media(prefers-reduced-motion:no-preference)`).

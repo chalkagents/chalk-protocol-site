@@ -42,6 +42,26 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     </header>
     <slot />
     <footer class="site-footer">
+      <div class="footer-cols">
+        <div class="footer-brand">
+          <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">▍</span>chalk<span class="brand-dim">-protocol</span></a>
+          <p>The quality gate for AI coding agents. Built through chalk itself.</p>
+        </div>
+        <nav class="footer-col" aria-label="Docs">
+          <h2>Docs</h2>
+          <a href="/quickstart">Quickstart</a>
+          <a href="/protocol">Protocol</a>
+          <a href="/research">Research</a>
+          <a href={npm}>npm package</a>
+        </nav>
+        <nav class="footer-col" aria-label="Community">
+          <h2>Community</h2>
+          <a href={repo}>GitHub</a>
+          <a href={`${repo}/issues`}>Issues</a>
+          <a href={`${repo}/blob/main/CONTRIBUTING.md`}>Contributing</a>
+          <a href={`${repo}/blob/main/LICENSE`}>License</a>
+        </nav>
+      </div>
       <p class="status-bar">
         <span class="seg seg-name">chalk-protocol</span>
         <span class="seg seg-note">
@@ -216,12 +236,61 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     text-decoration: none;
   }
 
-  /* Site footer — a tmux-style status bar. */
+  /* Site footer — link columns above a tmux-style status bar. */
   .site-footer {
     border-top: 1px solid var(--border-dim);
     background: var(--bg-raised);
-    font-family: var(--mono);
     font-size: 0.85rem;
+  }
+  .footer-cols {
+    max-width: 68rem;
+    margin: 0 auto;
+    padding: 2.75rem 1.5rem 2rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  @media (min-width: 44rem) {
+    .footer-cols {
+      grid-template-columns: 2fr 1fr 1fr;
+    }
+  }
+  .footer-brand .brand {
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--phosphor);
+    text-shadow: var(--glow);
+  }
+  .footer-brand p {
+    margin: 0.7rem 0 0;
+    color: var(--muted);
+    max-width: 26rem;
+    line-height: 1.6;
+  }
+  .footer-col h2 {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    margin: 0 0 0.8rem;
+    font-weight: 600;
+  }
+  .footer-col a {
+    display: block;
+    color: var(--ink);
+    padding: 0.2rem 0;
+  }
+  .footer-col a:hover {
+    color: var(--amber);
+    text-decoration: none;
+  }
+  .status-bar-wrap {
+    border-top: 1px solid var(--border-dim);
+  }
+  .site-footer .status-bar {
+    border-top: 1px solid var(--border-dim);
+    font-family: var(--mono);
   }
   .status-bar {
     max-width: 68rem;

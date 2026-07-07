@@ -15,6 +15,28 @@ const gates = [
   { name: 'Adversarial review', desc: 'A second agent tries to refute the change. Every blocking finding must be fixed before it passes.' },
   { name: 'Merge gate', desc: '`chalk done` only succeeds when verify is green, locked tests are untouched, and review passed.' },
 ];
+// The four levers as a feature grid — name + one-line tagline + where to read more.
+const levers = [
+  { name: 'Locked test', tag: 'A real test, locked read-only. The agent can’t weaken the spec to pass.', href: '/protocol' },
+  { name: 'Verify', tag: 'The real toolchain decides GREEN — never the agent’s self-report.', href: '/protocol' },
+  { name: 'Adversarial review', tag: 'A second agent tries to refute the change before it can land.', href: '/protocol' },
+  { name: 'Merge gate', tag: 'Nothing merges until verify is green, locks intact, review passed.', href: '/quickstart' },
+];
+// Before/after — the value made legible without watching the animation.
+const without = [
+  'Agent marks the task done',
+  'The failing test was quietly deleted',
+  'Review never happened',
+  'The bug ships',
+];
+const withChalk = [
+  'chalk done refuses — verify is RED',
+  'Locked tests can’t be touched',
+  'An adversary must sign off first',
+  'The gate closes only on real green',
+];
+// Honest trust: the agents Chalk drives (it's BYO-executor), not fabricated stars.
+const agents = ['Claude Code', 'Cursor', 'opencode', 'aider'];
 const steps = [
   { cmd: 'chalk next', desc: 'find the one task to work on' },
   { cmd: 'chalk context <id>', desc: 'read the acceptance criteria and at-risk tests before coding' },
@@ -63,7 +85,9 @@ const ascii = ` ██████╗██╗  ██╗ █████╗ █
     <section class="hero">
       <div class="hero-copy">
         <pre class="ascii" aria-hidden="true">{ascii}</pre>
-        <h1 class="wordmark">Chalk Protocol</h1>
+        <p class="wordmark" aria-hidden="true">Chalk Protocol</p>
+        <h1 class="headline">The quality gate for AI coding agents.</h1>
+        <p class="enemy">AI agents will tell you they’re done. Chalk makes them prove it.</p>
         <p class="pitch">
           Ship agent-written code through gates, not vibes — a locked spec decides success, not the model.
         </p>
@@ -80,6 +104,13 @@ const ascii = ` ██████╗██╗  ██╗ █████╗ █
           <a class="button" href={repo}>[ github ]</a>
           <a class="button" href={npm}>[ npm ]</a>
         </p>
+        <div class="trust">
+          <span class="trust-label">Works with any agent</span>
+          <ul class="trust-agents">
+            {agents.map((a) => <li>{a}</li>)}
+          </ul>
+          <p class="trust-note">Bring your own executor. Chalk is the referee — and it drives itself: this site ships through the same four gates.</p>
+        </div>
       </div>
 
       <div class="terminal hero-session" role="img" aria-label="A chalk session: the gate refuses an unverified done">
@@ -105,6 +136,42 @@ const ascii = ` ██████╗██╗  ██╗ █████╗ █
           <div class="line prompt-line" style={`--d:${cursorDelay}s`}>
             <span class="prompt" aria-hidden="true">$ </span><span class="cursor" aria-hidden="true">▍</span>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="levers" id="levers">
+      <p class="eyebrow" aria-hidden="true">$ chalk gates --list</p>
+      <h2>Four levers, one rule: the agent never certifies itself</h2>
+      <p class="section-sub">Each lever closes a way an agent can fake “done.” Together they make success an external fact.</p>
+      <ul class="lever-grid">
+        {levers.map((lever, i) => (
+          <li class="lever-card">
+            <span class="lever-no" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            <h3>{lever.name}</h3>
+            <p>{lever.tag}</p>
+            <a class="lever-link" href={lever.href}>Read more →</a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="compare" id="why">
+      <p class="eyebrow" aria-hidden="true">$ diff --without --with</p>
+      <h2>The difference a gate makes</h2>
+      <p class="section-sub">The same agent, the same task — one path ships a bug, the other can’t.</p>
+      <div class="compare-grid">
+        <div class="compare-col without">
+          <h3><span class="mark" aria-hidden="true">✗</span> Agent without Chalk</h3>
+          <ul>
+            {without.map((line) => <li>{line}</li>)}
+          </ul>
+        </div>
+        <div class="compare-col with">
+          <h3><span class="mark" aria-hidden="true">✓</span> Agent with Chalk</h3>
+          <ul>
+            {withChalk.map((line) => <li><code>{line}</code></li>)}
+          </ul>
         </div>
       </div>
     </section>
@@ -242,27 +309,45 @@ const ascii = ` ██████╗██╗  ██╗ █████╗ █
   }
   .wordmark {
     font-family: var(--mono);
-    font-size: 0.82rem;
+    font-size: 0.72rem;
     letter-spacing: 0.5em;
     text-transform: uppercase;
     color: var(--amber);
     text-shadow: var(--glow-amber);
-    margin: 0 0 1.5rem;
+    margin: 0 0 0.9rem;
     font-weight: 500;
   }
-  .pitch {
-    font-size: clamp(1.3rem, 2.6vw, 1.55rem);
-    line-height: 1.4;
-    font-weight: 700;
-    letter-spacing: -0.015em;
+  .headline {
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+    line-height: 1.08;
+    font-weight: 800;
+    letter-spacing: -0.03em;
     color: var(--ink);
-    margin: 0 0 0.9rem;
+    margin: 0 0 0.75rem;
+    max-width: 22ch;
+  }
+  .enemy {
+    font-size: clamp(1.05rem, 2.2vw, 1.2rem);
+    line-height: 1.45;
+    font-weight: 600;
+    color: var(--phosphor);
+    text-shadow: var(--glow);
+    margin: 0 0 1.1rem;
+    max-width: 34ch;
+  }
+  .pitch {
+    font-size: 1.02rem;
+    line-height: 1.55;
+    font-weight: 500;
+    color: var(--ink);
+    margin: 0 0 0.6rem;
+    max-width: 34rem;
   }
   .sub {
     color: var(--muted);
-    font-size: 1.02rem;
+    font-size: 0.98rem;
     margin: 0 0 1.75rem;
-    max-width: 32rem;
+    max-width: 34rem;
   }
   .install {
     display: flex;
@@ -315,6 +400,168 @@ const ascii = ` ██████╗██╗  ██╗ █████╗ █
     background: var(--amber);
     color: #0a0700;
     text-decoration: none;
+  }
+
+  /* ---- Trust strip ---- */
+  .trust {
+    margin: 2rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-dim);
+  }
+  .trust-label {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+  }
+  .trust-agents {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.1rem;
+    margin: 0.6rem 0 0.9rem;
+    padding: 0;
+  }
+  .trust-agents li {
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .trust-agents li::before {
+    content: '▸ ';
+    color: var(--phosphor);
+  }
+  .trust-note {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--muted);
+    max-width: 34rem;
+  }
+
+  /* ---- Feature grid (the four levers) ---- */
+  .lever-grid {
+    list-style: none;
+    padding: 0;
+    margin: 1.4rem 0 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 0.9rem;
+  }
+  .lever-card {
+    position: relative;
+    border: 1px solid var(--border);
+    background: var(--bg-inset);
+    padding: 1.3rem 1.2rem 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .lever-card:hover {
+    border-color: var(--phosphor);
+    box-shadow: 0 0 20px rgba(61, 255, 112, 0.1);
+  }
+  .lever-no {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--amber);
+    letter-spacing: 0.1em;
+  }
+  .lever-card h3 {
+    font-family: var(--mono);
+    font-size: 1rem;
+    color: var(--phosphor);
+    text-shadow: var(--glow);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0;
+  }
+  .lever-card p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    flex: 1;
+  }
+  .lever-link {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--amber);
+    margin-top: 0.3rem;
+  }
+
+  /* ---- Before / after comparison ---- */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+    margin: 1.4rem 0 0;
+  }
+  @media (min-width: 44rem) {
+    .compare-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .compare-col {
+    border: 1px solid var(--border);
+    background: var(--bg-inset);
+    padding: 1.2rem 1.3rem 1.4rem;
+  }
+  .compare-col.without {
+    border-color: rgba(255, 92, 92, 0.35);
+  }
+  .compare-col.with {
+    border-color: var(--border);
+  }
+  .compare-col h3 {
+    font-size: 1rem;
+    margin: 0 0 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .compare-col .mark {
+    font-family: var(--mono);
+  }
+  .compare-col.without .mark {
+    color: var(--red);
+    text-shadow: 0 0 8px rgba(255, 92, 92, 0.35);
+  }
+  .compare-col.with .mark {
+    color: var(--phosphor);
+    text-shadow: var(--glow);
+  }
+  .compare-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.6rem;
+  }
+  .compare-col li {
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--ink);
+    padding-left: 1.2rem;
+    position: relative;
+  }
+  .compare-col.without li::before {
+    content: '×';
+    position: absolute;
+    left: 0;
+    color: var(--red);
+  }
+  .compare-col.with li::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    color: var(--phosphor);
+  }
+  .compare-col.with code {
+    font-family: var(--mono);
+    font-size: 0.86rem;
+    color: var(--phosphor);
   }
 
   /* ---- Terminal frames ---- */
