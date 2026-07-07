@@ -246,6 +246,30 @@ describe('site chrome — shared layout, docs chrome, social meta', () => {
     );
   });
 
+  test('composition (#36): centered hero + terminal in its own full-width band', () => {
+    const html = read(pages[0]);
+    // Hero is a centered editorial column (not the old left-aligned two-column grid).
+    assert.match(
+      html,
+      /\.hero[^{}]*\{[^}]*text-align:\s*center/,
+      'expected the hero to be centered',
+    );
+    // The terminal moved OUT of the hero into a dedicated full-width demo band.
+    assert.ok(html.includes('class="hero-demo"'), 'expected the terminal in a separate hero-demo band');
+    assert.match(
+      html,
+      /<section class="hero-demo"[\s\S]*?terminal hero-session/,
+      'expected the gate-refusal terminal inside the hero-demo band, not the hero copy',
+    );
+    // Section headers are centered blocks.
+    assert.ok(html.includes('class="section-head"'), 'expected centered section-head blocks');
+    assert.match(
+      html,
+      /\.section-head[^{}]*\{[^}]*text-align:\s*center/,
+      'expected section headers to be centered',
+    );
+  });
+
   // --- landing reframe (#22): argument + proof sections. Each assertion fails if the
   // section is reverted, per the reviewer's revert-sensitivity bar.
   test('reframe: hero leads with a category headline and an enemy line', () => {
