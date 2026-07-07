@@ -704,8 +704,21 @@
   {
     "id": "task-499ca372",
     "title": "fix: verify gate is availability-coupled — root-build tests live-fetch upstream markdown and transient network failures turn verify RED",
-    "state": "todo",
-    "acceptanceCriteria": [],
+    "state": "done",
+    "acceptanceCriteria": [
+      {
+        "text": "The docs loader retries transient fetch failures (network error / timeout / 5xx) with bounded backoff, and still fails hard on 404 or empty body"
+      },
+      {
+        "text": "npm test is deterministic offline: the default suite never live-fetches raw.githubusercontent (build.test.mjs builds against a local fixture)"
+      },
+      {
+        "text": "One clearly-labeled live smoke test builds against the real upstream default, opt-in (skipped unless CHALK_LIVE_SMOKE=1) so it can never flake the gate"
+      },
+      {
+        "text": "Production build behavior is unchanged: a genuinely bad fetch (404/empty after retries) still fails the build non-zero"
+      }
+    ],
     "tests": [],
     "heldOut": [],
     "after": [],
@@ -719,11 +732,43 @@
       "bug"
     ],
     "pipeline": {
-      "stage": "selected",
-      "at": "2026-07-06T12:46:50.921Z"
+      "stage": "cleaned",
+      "at": "2026-07-07T09:16:36.867Z"
     },
     "createdAt": "2026-07-06T12:46:50.921Z",
-    "reviews": []
+    "reviews": [
+      {
+        "at": "2026-07-07T09:15:59.662Z",
+        "by": "adversary",
+        "verdict": "pass",
+        "findings": [
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "Criterion 1 names three transient classes (network error, timeout, 5xx) but only the 5xx retry path is asserted in fetch-doc.test.mjs. The AbortController timeout path and the fetch-rejects (network error) retry path are exercised by no test; they share the catch/retry mechanism, so risk is low, but the timeout branch in particular is entirely unverified."
+          },
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "Criterion 4 ('production build fails non-zero on 404/empty after retries') is only verified at the unit level (fetchDoc throws). No integration test asserts that npm run build actually exits non-zero when the loader hits a 404/empty doc; the fixture server always returns valid 200 bodies. The loader clearly propagates the throw, so the gap is minor."
+          },
+          {
+            "severity": "low",
+            "area": "correctness",
+            "note": "Only HTTP 404 is treated as fatal; other 4xx (403/410/400) are now retried then fail after backoff, a change from the original immediate-fail. This matches the stated criterion (which names 404 specifically) and is arguably desirable for GitHub raw 403/429 rate-limits, so not a defect — noted for awareness."
+          }
+        ]
+      }
+    ],
+    "branch": "fix/14-fix-verify-gate-is-availability",
+    "startedAt": "2026-07-07T09:08:46.288Z",
+    "pr": {
+      "number": 28,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/pull/28",
+      "recorded": true,
+      "lgtm": true
+    },
+    "doneAt": "2026-07-07T09:16:36.866Z"
   },
   {
     "id": "task-721976f8",
