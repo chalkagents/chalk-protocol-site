@@ -2,7 +2,7 @@
   "id": "proto-834bdbdd8118",
   "name": "chalk-protocol-site — Chalk Protocol",
   "createdAt": 1783328557922,
-  "updatedAt": 1783417360746,
+  "updatedAt": 1783420234261,
   "order": 0,
   "cards": [
     {
@@ -248,6 +248,25 @@
         "prNumber": 31,
         "prUrl": "https://github.com/chalkagents/chalk-protocol-site/pull/31",
         "evidenceUrl": "https://github.com/chalkagents/chalk-protocol-site/issues/30"
+      }
+    },
+    {
+      "id": "task-cf3c4f9f",
+      "title": "design: Revyl-inspired redesign — near-black + one lavender accent, light display headlines, HUD panels",
+      "column": "done",
+      "createdAt": 1783419036233,
+      "updatedAt": 1783420234261,
+      "order": 14,
+      "description": "- New near-black + single-lavender-accent design system applied site-wide (tokens in Base.astro); scanlines/phosphor-on-everything removed.\n- Landing hero: huge light-weight uppercase display headline with one glowing accent word; locked pitch retained; gate-refusal terminal kept as a masked hero visual.\n- Sections restyled as HUD panels (feature grid, before/after, trust strip) with mono wide-tracked eyebrows.\n- Docs three-column layout restyled to the new system; column pins (#30), copy buttons, callouts, TOC all retained.\n- All locked tests pass unchanged; new design covered by revert-sensitive assertions; zero new deps; full suite green.",
+      "testArtifact": {
+        "lastRun": {
+          "runId": "done-task-cf3c4f9f",
+          "status": "passed",
+          "at": 1783420234261
+        },
+        "prNumber": 34,
+        "prUrl": "https://github.com/chalkagents/chalk-protocol-site/pull/34",
+        "evidenceUrl": "https://github.com/chalkagents/chalk-protocol-site/issues/33"
       }
     }
   ]
