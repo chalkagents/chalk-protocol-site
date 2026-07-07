@@ -1,6 +1,8 @@
 import { defineConfig } from 'astro/config';
 import { rehypeHeadingIds } from '@astrojs/markdown-remark';
 import { headingAnchors } from './src/lib/heading-anchors.mjs';
+import { callouts } from './src/lib/callouts.mjs';
+import { codeCopy } from './src/lib/code-copy.mjs';
 
 export default defineConfig({
   site: 'https://protocol.chalkagents.com',
@@ -20,7 +22,7 @@ export default defineConfig({
   markdown: {
     // Astro's built-in heading-id pass runs AFTER user rehype plugins, so apply it
     // explicitly first — headingAnchors needs the ids to build its `#…` links.
-    rehypePlugins: [rehypeHeadingIds, headingAnchors],
+    rehypePlugins: [rehypeHeadingIds, headingAnchors, callouts, codeCopy],
     shikiConfig: { themes: { light: 'github-light', dark: 'github-dark' } },
   },
 });

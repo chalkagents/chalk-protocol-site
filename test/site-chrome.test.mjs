@@ -29,6 +29,12 @@ const fixtureMarkdown = [
   'chalk verify',
   '```',
   '',
+  '> [!NOTE]',
+  '> Fixture note body for the callout assertion.',
+  '',
+  '> [!WARNING]',
+  '> Fixture warning body.',
+  '',
 ].join('\n');
 
 const server = http.createServer((req, res) => {
@@ -321,6 +327,68 @@ describe('site chrome — shared layout, docs chrome, social meta', () => {
     test(`${page.name}: fenced code renders as a Shiki block`, () => {
       const html = read(page);
       assert.ok(html.includes('astro-code'), `expected a Shiki .astro-code block on /${page.name}`);
+    });
+
+    // --- docs three-column upgrade (#23): revert-sensitive per the reviewer's bar.
+    test(`${page.name}: renders the three-column docs layout with a left nav`, () => {
+      const html = read(page);
+      assert.ok(html.includes('class="doc-layout"'), `expected the three-column layout on /${page.name}`);
+      assert.ok(html.includes('doc-nav-link'), `expected the left doc nav on /${page.name}`);
+      // The current doc is the active nav entry.
+      assert.ok(
+        /doc-nav-link[^"]*active/.test(html) && html.includes('aria-current="page"'),
+        `expected the current doc marked active on /${page.name}`,
+      );
+      // All three docs are reachable from the nav.
+      for (const id of ['protocol', 'quickstart', 'research']) {
+        assert.ok(html.includes(`href="/${id}"`), `expected the nav to link /${id} on /${page.name}`);
+      }
+    });
+
+    test(`${page.name}: has a right-hand "On this page" TOC built from the headings`, () => {
+      const html = read(page);
+      assert.ok(html.includes('class="doc-toc"'), `expected the TOC rail on /${page.name}`);
+      assert.ok(html.includes('On this page'), `expected the TOC label on /${page.name}`);
+      // The fixture's H2 must appear as a TOC link pointing at its heading id.
+      assert.ok(
+        html.includes('data-toc-target="fixture-section-anchor-target"'),
+        `expected a TOC entry for the fixture section on /${page.name}`,
+      );
+    });
+
+    test(`${page.name}: every code block has a copy button`, () => {
+      const html = read(page);
+      assert.ok(html.includes('class="code-block"'), `expected code blocks wrapped for copy on /${page.name}`);
+      assert.ok(html.includes('class="code-copy"'), `expected a copy button on /${page.name}`);
+      // The wrapper contains the Shiki block (copy reads the sibling <pre> at click time).
+      assert.ok(
+        /class="code-block">[\s\S]*?class="code-copy"[\s\S]*?astro-code/.test(html),
+        `expected the copy button to sit alongside the Shiki block on /${page.name}`,
+      );
+    });
+
+    // End-to-end callout proof: exercises the REAL remark→rehype pipeline (not a
+    // synthetic tree) AND is revert-sensitive — removing `callouts` from the
+    // astro.config rehypePlugins turns these plain blockquotes and fails here.
+    test(`${page.name}: GitHub-alert markdown renders as styled callouts`, () => {
+      const html = read(page);
+      assert.ok(html.includes('callout callout-note'), `expected a rendered [!NOTE] callout on /${page.name}`);
+      assert.ok(html.includes('callout callout-warning'), `expected a rendered [!WARNING] callout on /${page.name}`);
+      assert.ok(html.includes('class="callout-title">Note<'), `expected the Note title row on /${page.name}`);
+      // The marker text must be stripped, and the body preserved.
+      assert.ok(!html.includes('[!NOTE]'), `expected the [!NOTE] marker stripped from output on /${page.name}`);
+      assert.ok(
+        html.includes('Fixture note body for the callout assertion.'),
+        `expected the callout body preserved on /${page.name}`,
+      );
+    });
+
+    test(`${page.name}: the docs interactions are wired (copy + scroll-spy JS present)`, () => {
+      const html = read(page);
+      // Not a DOM execution, but a removed/renamed handler fails here — stronger than
+      // asserting only the markup the handler targets.
+      assert.ok(html.includes('clipboard'), `expected the copy handler on /${page.name}`);
+      assert.ok(html.includes('IntersectionObserver'), `expected the TOC scroll-spy on /${page.name}`);
     });
   }
 
