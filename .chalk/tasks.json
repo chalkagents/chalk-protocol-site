@@ -1351,7 +1351,7 @@
   {
     "id": "task-72c30c21",
     "title": "design: Chalk identity — chalkboard palette + creamy chalk-white type + chalk-yellow accent w/ hand-drawn underline (all pages)",
-    "state": "specd",
+    "state": "done",
     "acceptanceCriteria": [
       {
         "text": "Chalkboard palette applied site-wide: chalkboard-slate canvas, creamy chalk-white text, chalk-yellow accent (revert-sensitive token assertions updated from the Revyl values)."
@@ -1379,47 +1379,59 @@
       "enhancement"
     ],
     "pipeline": {
-      "stage": "selected",
-      "at": "2026-07-07T11:13:03.055Z"
+      "stage": "cleaned",
+      "at": "2026-07-07T11:22:24.658Z"
     },
     "createdAt": "2026-07-07T11:13:03.056Z",
-    "reviews": []
-  },
-  {
-    "id": "task-03ceaa2c",
-    "title": "design: restructure docs pages — editorial doc header, rebalanced columns + rhythm, styled pager (match the landing)",
-    "state": "specd",
-    "acceptanceCriteria": [
+    "reviews": [
       {
-        "text": "Docs pages open with a header zone: eyebrow + a display-font page title (H1 styled large) + source link — matching the landing's editorial feel."
+        "at": "2026-07-07T11:19:08.162Z",
+        "by": "adversary",
+        "verdict": "block",
+        "findings": [
+          {
+            "severity": "med",
+            "area": "correctness",
+            "note": "Criterion 3 requires docs pages to *fully* match the new chalk identity, but src/pages/[slug].astro still carries a leftover lime-green accent that is not part of the chalkboard palette: `.pager-link:hover` uses `box-shadow: 0 0 18px rgba(61, 255, 112, 0.12)` (line 447) and `.pager-link:hover .pager-title`/hover glow is green, plus a hardcoded `color: #0a0700` on `.code-copy:hover` (line 335). These are not chalk-yellow (--accent #e9cf7d) and visibly clash with the identity on doc pages, so docs do not fully match."
+          },
+          {
+            "severity": "med",
+            "area": "test-adequacy",
+            "note": "The revert-sensitive palette/underline assertions only read pages[0] (the landing index.html). No test asserts the docs pages (protocol/quickstart/research) actually render with the new creamy-white/chalk-yellow tokens or that the stray green pager glow is gone — criterion 3 (docs identity) is effectively untested and would not catch the leftover Revyl/lime remnants."
+          },
+          {
+            "severity": "low",
+            "area": "correctness",
+            "note": "The negative assertion `!/\\.accent[^{}]*\\{[^}]*text-shadow/` on full landing HTML is broad; it relies on no other `.accent`-prefixed selector on the page ever carrying a text-shadow. Not a defect today, but it couples the accent-underline guarantee to incidental CSS ordering rather than precisely targeting `.headline .accent`."
+          }
+        ]
       },
       {
-        "text": "Three-column layout retained with rebalanced proportions and clear vertical rhythm; left nav + right TOC refined; column pins (#30) intact."
-      },
-      {
-        "text": "Prev/next pager styled as panels."
-      },
-      {
-        "text": "All locked tests pass; full suite green; zero new deps; a revert-sensitive test covers the new doc-header."
+        "at": "2026-07-07T11:21:50.607Z",
+        "by": "adversary",
+        "verdict": "pass",
+        "findings": [
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "Secondary tokens (--panel, --fg2, --fg3, --border, --ok, --err) and the ::selection/header background changes are altered but not directly asserted; a revert of those specific values would go unnoticed. Core criteria tokens (--void, --fg, --accent) and the underline/no-glow behavior ARE covered by revert-sensitive tests, so no criterion ships without a test."
+          },
+          {
+            "severity": "low",
+            "area": "correctness",
+            "note": "Verified working tree: no lavender (#c4a1ff), pure-black (#050505), phosphor-green (61,255,112), or old accent-word text-shadow remnants remain in src. Accent word retains color:var(--accent) plus the inline-SVG chalk underline; docs prose (article p/li) uses var(--fg)=#efece0 creamy chalk-white. No package.json change → zero new deps (SVG is an inline data URI)."
+          }
+        ]
       }
     ],
-    "tests": [],
-    "heldOut": [],
-    "after": [],
-    "issue": {
-      "number": 43,
-      "url": "https://github.com/chalkagents/chalk-protocol-site/issues/43",
-      "body": "## Direction\n\nThe landing is dialed in; the docs pages (/protocol, /quickstart, /research — shared [slug].astro) need to match its editorial composition. Today they jump abruptly from a thin meta bar into raw markdown, with plain column proportions. Restructure + reposition to feel like the landing.\n\n## Changes\n\n- **Doc header zone** (top of the content column): a mono eyebrow (e.g. \"Documentation · PROTOCOL.md\") above the doc title, matching the landing's eyebrow pattern; the article's H1 restyled as a Funnel-Display headline (large, creamy chalk-white) — a real page hero, not a generic markdown heading. Source-on-GitHub link positioned cleanly in the header.\n- **Better column proportions & rhythm**: rebalance the 3-col grid (comfortable ~46rem prose measure, refined rails), add top padding/vertical rhythm consistent with the landing sections. Left nav gets the \"Docs\" rail label + chalk-yellow active state; right TOC \"On this page\" refined + sticky.\n- **Pager as HUD cards**: style prev/next to match the site's panels (hairline border, hover).\n- Keep the chalk identity (#40), three-column layout + #30 column pins, copy buttons, callouts, TOC, self-hosted fonts.\n\n## Constraints\n\n- LOCKED: test/docs-pages.test.mjs unchanged (docs still render parent markdown; the H1 still renders as `<h1>…</h1>`; callouts/code blocks intact).\n- No new deps; build stays offline; reduced-motion-safe; keep all site-chrome hooks (doc-layout, grid-column pins, doc-nav-link active, doc-toc, code-block/copy, callouts).\n\n## Acceptance criteria\n\n- [ ] Docs pages open with a header zone: eyebrow + a display-font page title (H1 styled large) + source link — matching the landing's editorial feel.\n- [ ] Three-column layout retained with rebalanced proportions and clear vertical rhythm; left nav + right TOC refined; column pins (#30) intact.\n- [ ] Prev/next pager styled as panels.\n- [ ] All locked tests pass; full suite green; zero new deps; a revert-sensitive test covers the new doc-header.\n"
+    "branch": "feat/40-design-chalk-identity-chalkboard-palette",
+    "startedAt": "2026-07-07T11:13:08.857Z",
+    "pr": {
+      "number": 41,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/pull/41",
+      "recorded": true,
+      "lgtm": true
     },
-    "branchType": "feat",
-    "labels": [
-      "enhancement"
-    ],
-    "pipeline": {
-      "stage": "selected",
-      "at": "2026-07-07T11:56:35.444Z"
-    },
-    "createdAt": "2026-07-07T11:56:35.445Z",
-    "reviews": []
+    "doneAt": "2026-07-07T11:22:24.657Z"
   }
 ]
