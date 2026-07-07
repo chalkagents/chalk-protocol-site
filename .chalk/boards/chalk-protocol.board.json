@@ -2,7 +2,7 @@
   "id": "proto-834bdbdd8118",
   "name": "chalk-protocol-site — Chalk Protocol",
   "createdAt": 1783328557922,
-  "updatedAt": 1783412821840,
+  "updatedAt": 1783414172621,
   "order": 0,
   "cards": [
     {
@@ -180,6 +180,34 @@
         "prNumber": 20,
         "prUrl": "https://github.com/chalkagents/chalk-protocol-site/pull/20",
         "evidenceUrl": "https://github.com/chalkagents/chalk-protocol-site/issues/19"
+      }
+    },
+    {
+      "id": "task-058ccfa8",
+      "title": "design: docs three-column upgrade — left nav + sticky TOC, code-copy buttons, callouts (hand-rolled, zero-dep)",
+      "column": "in_progress",
+      "createdAt": 1783413574589,
+      "updatedAt": 1783413574589,
+      "order": 11,
+      "description": "- Docs pages render a three-column layout: left doc nav (active highlighted), constrained prose, right sticky TOC of the page's headings.\n- Every code block has a working copy button (hand-rolled, no dep).\n- GitHub-alert callouts in the source markdown render as styled note/tip/warning/caution boxes.\n- Prose column is width-constrained and readable; prev/next, source link, heading anchors retained.\n- All locked tests pass unmodified; new chrome covered by revert-sensitive assertions in test/site-chrome.test.mjs.\n- Zero new deps; full suite green."
+    },
+    {
+      "id": "task-ebe7ca92",
+      "title": "design: landing reframe — name the enemy, feature grid, before/after, honest trust strip, real footer",
+      "column": "done",
+      "createdAt": 1783413574592,
+      "updatedAt": 1783414172621,
+      "order": 12,
+      "description": "- Hero leads with a category headline + an enemy/problem line; the existing pitch + install + session are retained.\n- A feature grid names all four levers, each linking to a doc.\n- A before/after (without/with Chalk) section is present.\n- An honest \"works with any agent\" trust strip is present; no fabricated metrics.\n- A real footer with Docs + Community link columns.\n- All locked tests pass unmodified; new sections covered by new assertions in test/site-chrome.test.mjs (revert-sensitive, per the reviewer's standing bar).\n- Zero new deps; full suite green.",
+      "testArtifact": {
+        "lastRun": {
+          "runId": "done-task-ebe7ca92",
+          "status": "passed",
+          "at": 1783414172621
+        },
+        "prNumber": 24,
+        "prUrl": "https://github.com/chalkagents/chalk-protocol-site/pull/24",
+        "evidenceUrl": "https://github.com/chalkagents/chalk-protocol-site/issues/22"
       }
     }
   ]
