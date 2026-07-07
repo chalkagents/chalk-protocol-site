@@ -2,7 +2,7 @@
   "id": "proto-834bdbdd8118",
   "name": "chalk-protocol-site — Chalk Protocol",
   "createdAt": 1783328557922,
-  "updatedAt": 1783343330083,
+  "updatedAt": 1783412821840,
   "order": 0,
   "cards": [
     {
@@ -162,6 +162,25 @@
       "createdAt": 1783342010921,
       "updatedAt": 1783342010921,
       "order": 9
+    },
+    {
+      "id": "task-721976f8",
+      "title": "design: v2.1 modern terminal — keep the session identity, calm the surface for readability",
+      "column": "done",
+      "createdAt": 1783344081606,
+      "updatedAt": 1783412821840,
+      "order": 10,
+      "description": "- Prose renders in sans, sentence case; mono only for terminal/command content.\n- Scanlines/glow scoped to terminal frames; no texture overlay on body text.\n- Section headings + eyebrow pattern; hero readable at a glance (pitch, install, session).\n- Full suite green; locked tests unmodified.",
+      "testArtifact": {
+        "lastRun": {
+          "runId": "done-task-721976f8",
+          "status": "passed",
+          "at": 1783412821840
+        },
+        "prNumber": 20,
+        "prUrl": "https://github.com/chalkagents/chalk-protocol-site/pull/20",
+        "evidenceUrl": "https://github.com/chalkagents/chalk-protocol-site/issues/19"
+      }
     }
   ]
 }

@@ -724,5 +724,116 @@
     },
     "createdAt": "2026-07-06T12:46:50.921Z",
     "reviews": []
+  },
+  {
+    "id": "task-721976f8",
+    "title": "design: v2.1 modern terminal — keep the session identity, calm the surface for readability",
+    "state": "done",
+    "acceptanceCriteria": [
+      {
+        "text": "Prose renders in sans, sentence case; mono only for terminal/command content."
+      },
+      {
+        "text": "Scanlines/glow scoped to terminal frames; no texture overlay on body text."
+      },
+      {
+        "text": "Section headings + eyebrow pattern; hero readable at a glance (pitch, install, session)."
+      },
+      {
+        "text": "Full suite green; locked tests unmodified."
+      }
+    ],
+    "tests": [],
+    "heldOut": [],
+    "after": [],
+    "issue": {
+      "number": 19,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/issues/19",
+      "body": "## Direction (maintainer feedback on v2)\n\nKeep the terminal identity — the animated gate-refusal hero, ASCII wordmark, session framing all stay. But v2 reads as a CRT cosplay: full-page scanlines, all-mono all-caps prose, and glow on body text tax readability. v2.1 = **modern terminal**: the terminal lives in the terminals; the prose around them is clean, calm, and instantly scannable.\n\n## Spec\n\n- **Typography split**: prose (pitch, descriptions, docs body) in a clean system sans; mono reserved for terminal content, commands, code, and labels. Pitch in sentence case at display size — no all-caps paragraphs.\n- **Calm the surface**: scanline/vignette texture only INSIDE `.terminal` frames, never over reading text. Text glow only on terminal/accent elements. Body text near-white on the dark green-black ground, comfortable contrast.\n- **Hierarchy for grasp-ability**: real sans headings (\"The loop\", \"Quickstart\", \"Docs\") with the `$ chalk …` motif as a small mono eyebrow above each; generous whitespace; prose measure ≤ 42rem.\n- **Gates easier to scan**: keep the terminal frame, but gate names in mono + descriptions in sans with breathing room.\n- Docs pages follow: sans body, mono code/chrome, same calm surface.\n- Keep: hero session animation (reduced-motion-safe), copy button, status-bar footer, no-radius rule, one-script budget, zero new deps.\n\n## Constraints\n\n- LOCKED: `test/docs-pages.test.mjs` untouched; all contract strings survive (pitch, gates, steps, links, install).\n- `test/site-chrome.test.mjs` adaptable, coverage must not drop.\n\n## Acceptance criteria\n\n- [ ] Prose renders in sans, sentence case; mono only for terminal/command content.\n- [ ] Scanlines/glow scoped to terminal frames; no texture overlay on body text.\n- [ ] Section headings + eyebrow pattern; hero readable at a glance (pitch, install, session).\n- [ ] Full suite green; locked tests unmodified.\n"
+    },
+    "branchType": "feat",
+    "labels": [
+      "enhancement"
+    ],
+    "pipeline": {
+      "stage": "cleaned",
+      "at": "2026-07-07T08:27:01.841Z"
+    },
+    "createdAt": "2026-07-06T13:21:21.606Z",
+    "reviews": [
+      {
+        "at": "2026-07-06T13:27:38.971Z",
+        "by": "adversary",
+        "verdict": "block",
+        "findings": [
+          {
+            "severity": "high",
+            "area": "test-adequacy",
+            "note": "Zero tests cover any of the changed behavior. Criteria 1–3 (sans prose, scanlines scoped to .terminal, eyebrow+heading pattern) have no assertions anywhere: test/site-chrome.test.mjs only checks pre-existing markup (class=\"terminal\", session strings, copy button, reduced-motion guard, footer links), none of which this diff touches. Reverting the entire diff would leave the full suite green — a vacuous pass. The task's locked-test list is '(none)', so the change ships design behavior with no test that would catch a regression (e.g., --sans being re-aliased to --mono, or body::before scanlines reappearing globally)."
+          },
+          {
+            "severity": "med",
+            "area": "correctness",
+            "note": "Criterion 1 says 'Prose renders in sans, sentence case; mono only for terminal/command content', but non-terminal prose/UI remains mono and/or uppercase: the h1 .wordmark is mono + text-transform:uppercase (index.astro), .doc-meta nav links and doc-links anchors are forced mono ([slug].astro:59, index.astro:517), the docs pager labels are uppercase ([slug].astro:217), and the entire header nav and footer are mono. Some of this is defensible as 'terminal chrome', but the criterion as written draws the line at terminal/command content, and doc titles like 'README — What Chalk Protocol is...' links and pager labels are navigation prose, not commands. The contract is ambiguous enough that this needed an explicit decision, not silent inclusion."
+          },
+          {
+            "severity": "low",
+            "area": "correctness",
+            "note": "Scanline overlay (.terminal::after, position:absolute, no z-index) sits in the same stacking level as the animated .session .line elements (opacity animations create stacking contexts with z-index:0). Paint order currently favors the ::after because it is last in tree order, but this is fragile — any future z-index on session content silently lifts text above the scanlines or vice versa. An explicit z-index on the overlay would make the scoping robust."
+          },
+          {
+            "severity": "low",
+            "area": "regression",
+            "note": "The global vignette (old body::after inset box-shadow) was removed along with the global scanlines, and the body radial gradient endpoint color changed (#0a1f0e→#0b1a0f). No test guards the visual identity ('keep the session identity' per the task title); .install-cmd keeps text-shadow glow while .steps code lost its glow — inconsistent phosphor treatment across command content with nothing asserting which is intended."
+          },
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "Criterion 4 ('full suite green') cannot be independently confirmed from the diff alone; even if green, the suite's brutalist no-radius regex and chrome checks are the only style-level assertions and they predate this change — no new assertion was added for v2.1 despite the task being entirely about observable rendered output that is testable in built HTML/CSS (e.g., asserting body font-family resolves to the sans stack, or that repeating-linear-gradient appears only within a .terminal-scoped rule)."
+          }
+        ]
+      },
+      {
+        "at": "2026-07-06T13:31:43.298Z",
+        "by": "adversary",
+        "verdict": "pass",
+        "findings": [
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "The three v2.1 tests are genuinely revert-sensitive for criteria 1–3 (--sans re-aliased to mono, body-scoped scanlines, or eyebrow/heading collapse would each fail), but they under-specify the contract: nothing asserts headings lost their uppercase/phosphor-glow styling, that the eyebrow itself renders mono, or that the vignette (body::after inset box-shadow) stays removed — a partial revert re-adding `text-transform:uppercase`/`text-shadow:var(--glow)` to h2 or a page-global vignette overlay would still pass green."
+          },
+          {
+            "severity": "low",
+            "area": "correctness",
+            "note": "Criterion 2 says scanlines/GLOW scoped to terminal frames, yet glow text-shadows remain outside frames: .brand in the site header, .wordmark (amber glow), .ascii hero art, and the docs pager hover (.pager-link:hover .pager-title gets var(--glow)). These are chrome/brand/command elements so they arguably honor the design intent, but they are not literally inside .terminal frames."
+          },
+          {
+            "severity": "low",
+            "area": "correctness",
+            "note": "Sentence-case criterion: .gates strong keeps text-transform:uppercase (defensible — it lives inside a terminal frame) and the wordmark stays uppercase (brand mark). No prose paragraph retains uppercase, so criterion 1 holds in substance."
+          },
+          {
+            "severity": "low",
+            "area": "regression",
+            "note": "The .terminal::after scanline overlay now sits above terminal content with z-index:1; pointer-events:none prevents interaction problems and the darkened stripe opacity was reduced (0.22→0.16), and no other test file asserts the old palette, body::before overlay, or mono body, so no existing assertion regresses."
+          },
+          {
+            "severity": "low",
+            "area": "test-adequacy",
+            "note": "Scanline scoping and sans-body assertions run only against the landing page HTML; acceptable because the styles are global in Base.astro and inlined identically on doc pages, but a doc-page-scoped scanline overlay added later would go undetected."
+          }
+        ]
+      }
+    ],
+    "branch": "feat/19-design-v2-1-modern-terminal",
+    "startedAt": "2026-07-06T13:21:26.613Z",
+    "pr": {
+      "number": 20,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/pull/20",
+      "recorded": true,
+      "lgtm": true
+    },
+    "doneAt": "2026-07-07T08:27:01.840Z"
   }
 ]
