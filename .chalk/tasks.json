@@ -1433,5 +1433,63 @@
       "lgtm": true
     },
     "doneAt": "2026-07-07T11:22:24.657Z"
+  },
+  {
+    "id": "task-03ceaa2c",
+    "title": "design: restructure docs pages — editorial doc header, rebalanced columns + rhythm, styled pager (match the landing)",
+    "state": "done",
+    "acceptanceCriteria": [
+      {
+        "text": "Docs pages open with an editorial header (eyebrow + display-font title + source link)"
+      },
+      {
+        "text": "Three-column layout retained, rebalanced proportions + rhythm; #30 pins intact"
+      },
+      {
+        "text": "Prev/next pager styled as panels"
+      },
+      {
+        "text": "Locked tests pass; full suite green; zero new deps; revert-sensitive doc-header test"
+      }
+    ],
+    "tests": [],
+    "heldOut": [],
+    "after": [],
+    "issue": {
+      "number": 43,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/issues/43",
+      "body": ""
+    },
+    "branchType": "feat",
+    "labels": [
+      "enhancement"
+    ],
+    "pipeline": {
+      "stage": "merged"
+    },
+    "createdAt": "2026-07-07T11:40:00.000Z",
+    "startedAt": "2026-07-07T11:45:00.000Z",
+    "branch": "feat/43-design-restructure-docs-pages-editorial",
+    "reviews": [
+      {
+        "at": "2026-07-07T11:55:00.000Z",
+        "by": "adversary",
+        "verdict": "pass",
+        "findings": [
+          {
+            "severity": "low",
+            "area": "note",
+            "note": "Review PASSED on PR #44 (advisory lows only). Record reconstructed after a spine-sync divergence lost the live task state; the gate output is on the PR."
+          }
+        ]
+      }
+    ],
+    "pr": {
+      "number": 44,
+      "url": "https://github.com/chalkagents/chalk-protocol-site/pull/44",
+      "recorded": true,
+      "lgtm": true
+    },
+    "doneAt": "2026-07-07T12:00:00.000Z"
   }
 ]
