@@ -1,4 +1,5 @@
 import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
 import type { Loader } from 'astro/loaders';
 import { DOCS } from './lib/docs.mjs';
 import { fetchDoc } from './lib/fetch-doc.mjs';
@@ -28,4 +29,17 @@ const docs = defineCollection({
   schema: z.object({ title: z.string(), file: z.string() }),
 });
 
-export const collections = { docs };
+// Blog posts live locally in src/content/blog as Markdown — unlike docs, they are the
+// site's own writing, not mirrored from the upstream repo.
+const blog = defineCollection({
+  loader: glob({ pattern: '*.md', base: './src/content/blog' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    date: z.coerce.date(),
+    author: z.string().default('Chalk Agents'),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { docs, blog };

@@ -1,0 +1,280 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', (p) => !p.data.draft);
+  return posts.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { title, description, date, author } = entry.data;
+const dateLabel = date.toLocaleDateString('en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+const isoDate = date.toISOString().slice(0, 10);
+---
+<Base title={`${title} — Chalk Protocol`} description={description}>
+  <div class="post-layout">
+    <div class="post-toolbar">
+      <a class="post-back" href="/blog"><span aria-hidden="true">&larr;</span> Blog</a>
+      <a class="post-source" href="/">Chalk Protocol <span aria-hidden="true">&#8599;</span></a>
+    </div>
+    <header class="post-head">
+      <p class="eyebrow">Blog · <time datetime={isoDate}>{dateLabel}</time> · {author}</p>
+      <h1>{title}</h1>
+      <p class="post-dek">{description}</p>
+    </header>
+    <article>
+      <Content />
+    </article>
+    <footer class="post-cta">
+      <p>Chalk Protocol is open source — the quality gate for AI coding agents.</p>
+      <div class="post-cta-actions">
+        <a class="btn primary" href="https://github.com/chalkagents/chalk-protocol">Star on GitHub</a>
+        <a class="btn" href="/quickstart">Read the quickstart</a>
+      </div>
+    </footer>
+  </div>
+</Base>
+
+<script>
+  // Copy buttons on code blocks — read the sibling <pre> at click time.
+  for (const btn of document.querySelectorAll<HTMLButtonElement>('.code-copy')) {
+    let restore: ReturnType<typeof setTimeout> | undefined;
+    btn.addEventListener('click', async () => {
+      const pre = btn.parentElement?.querySelector('pre');
+      if (!pre) return;
+      try {
+        await navigator.clipboard.writeText(pre.innerText);
+        btn.textContent = 'copied ✓';
+        clearTimeout(restore);
+        restore = setTimeout(() => { btn.textContent = 'copy'; }, 1200);
+      } catch {
+        /* clipboard unavailable — the code is selectable */
+      }
+    });
+  }
+</script>
+
+<style>
+  /* Single centered editorial column — no grid rails, so placement can't drift. */
+  .post-layout {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 4.5rem;
+  }
+  .post-toolbar {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    padding-bottom: 1.4rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .post-back { color: var(--fg2); }
+  .post-back:hover { color: var(--fg); }
+  .post-source { color: var(--accent); }
+  .post-source:hover { color: var(--accent-deep); }
+
+  .post-head { margin-bottom: 2.6rem; }
+  .post-head h1 {
+    font-family: var(--display);
+    font-weight: 300;
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+    margin: 0.4rem 0 0;
+    text-wrap: balance;
+  }
+  .post-dek {
+    margin: 1.3rem 0 0;
+    font-size: 1.2rem;
+    line-height: 1.55;
+    color: var(--fg2);
+    max-width: 40rem;
+  }
+
+  /* Rendered markdown prose — matches the docs pages. */
+  article {
+    font-size: 1.05rem;
+    line-height: 1.8;
+  }
+  article :global(h2),
+  article :global(h3),
+  article :global(h4) {
+    color: var(--fg);
+    letter-spacing: -0.015em;
+    margin: 2.6rem 0 0.7rem;
+    scroll-margin-top: 5rem;
+  }
+  article :global(h2) {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: 1.7rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.4rem;
+  }
+  article :global(h3) { font-size: 1.2rem; }
+  article :global(p),
+  article :global(li) { color: var(--fg); }
+  article :global(li) { margin: 0.3rem 0; }
+  article :global(strong) { color: var(--fg); }
+  article :global(a) { color: var(--accent); }
+  article :global(a:hover) { color: var(--accent-deep); }
+  article :global(code) {
+    font-family: var(--mono);
+    font-size: 0.9em;
+  }
+  article :global(:not(pre) > code) {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    padding: 0.1rem 0.35rem;
+    color: var(--accent);
+  }
+
+  /* Code block + copy button (src/lib/code-copy.mjs) */
+  article :global(.code-block) {
+    position: relative;
+    margin: 1.2rem 0;
+  }
+  article :global(.code-block pre) {
+    overflow-x: auto;
+    padding: 0.9rem 1.1rem;
+    border-radius: 0;
+    margin: 0;
+  }
+  article :global(.code-copy) {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--fg2);
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    padding: 0.15rem 0.55rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+  article :global(.code-block:hover .code-copy),
+  article :global(.code-copy:focus) { opacity: 1; }
+  article :global(.code-copy:hover) {
+    color: #141a12;
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* Callouts (src/lib/callouts.mjs) */
+  article :global(.callout) {
+    margin: 1.4rem 0;
+    padding: 0.8rem 1.1rem;
+    border: 1px solid var(--border);
+    border-left-width: 3px;
+    background: var(--panel-2);
+  }
+  article :global(.callout-title) {
+    margin: 0 0 0.3rem;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+  }
+  article :global(.callout p:last-child) { margin-bottom: 0; }
+  article :global(.callout-note),
+  article :global(.callout-tip),
+  article :global(.callout-important),
+  article :global(.callout-warning) { border-left-color: var(--accent); }
+  article :global(.callout-note .callout-title),
+  article :global(.callout-tip .callout-title),
+  article :global(.callout-important .callout-title),
+  article :global(.callout-warning .callout-title) { color: var(--accent); }
+  article :global(.callout-caution) { border-left-color: var(--err); }
+  article :global(.callout-caution .callout-title) { color: var(--err); }
+
+  article :global(blockquote) {
+    margin: 1.3rem 0;
+    padding: 0.4rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--panel-2);
+    color: var(--fg2);
+  }
+  article :global(table) {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1.3rem 0;
+    font-size: 0.95rem;
+    display: block;
+    overflow-x: auto;
+  }
+  article :global(th),
+  article :global(td) {
+    border: 1px solid var(--border);
+    padding: 0.45rem 0.7rem;
+    text-align: left;
+  }
+  article :global(th) { background: var(--panel-2); color: var(--fg); }
+  article :global(hr) {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: 2.4rem 0;
+  }
+  article :global(img) { max-width: 100%; }
+  article :global(.heading-anchor) {
+    margin-left: 0.45rem;
+    color: var(--fg2);
+    font-family: var(--mono);
+    font-weight: 400;
+    text-decoration: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+  article :global(h2:hover .heading-anchor),
+  article :global(h3:hover .heading-anchor),
+  article :global(.heading-anchor:focus) { opacity: 1; }
+  article :global(.heading-anchor:hover) { color: var(--accent); }
+
+  /* End-of-post CTA */
+  .post-cta {
+    margin-top: 3.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .post-cta > p {
+    margin: 0 0 1.1rem;
+    color: var(--fg2);
+  }
+  .post-cta-actions {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    padding: 0.55rem 1.1rem;
+    border: 1px solid var(--border-strong);
+    color: var(--fg);
+    text-decoration: none;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn.primary {
+    background: var(--accent);
+    color: #141a12;
+    border-color: var(--accent);
+  }
+  .btn.primary:hover { background: var(--accent-deep); color: #141a12; }
+</style>
